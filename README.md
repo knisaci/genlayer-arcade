@@ -2,7 +2,7 @@
 
 Four browser-based mini-games that teach GenLayer concepts — validator consensus, Intelligent Contracts, the py-genlayer API, and Testnet Bradbury — through play.
 
-**Live demo:** https://YOUR_USERNAME.github.io/genlayer-arcade
+**Live demo:** https://knisaci.github.io/genlayer-arcade
 
 ---
 
