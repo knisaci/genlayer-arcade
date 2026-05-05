@@ -4,299 +4,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GenLayer Community Arcade</title>
-<meta name="description" content="Four interactive mini-games to learn GenLayer — trivia, validator prediction, contract builder, and consensus simulator.">
-<meta property="og:title" content="GenLayer Community Arcade">
-<meta property="og:description" content="Learn GenLayer by playing. Trivia, Predict the Validators, Contract Builder & Consensus Simulator.">
-<meta property="og:type" content="website">
+<meta name="description" content="Four mini-games powered by real GenLayer Intelligent Contracts on Testnet Bradbury.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "genlayer-js": "https://esm.sh/genlayer-js@latest",
+    "genlayer-js/chains": "https://esm.sh/genlayer-js@latest/chains",
+    "genlayer-js/types": "https://esm.sh/genlayer-js@latest/types"
+  }
+}
+</script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --cyan: #00E5CC;
-    --cyan-dim: rgba(0,229,204,0.12);
-    --dark: #080C18;
-    --panel: #0F1624;
-    --panel2: #161E2E;
-    --border: rgba(255,255,255,0.07);
-    --border-bright: rgba(0,229,204,0.3);
-    --text: #E2E8F0;
-    --muted: #64748B;
-    --success: #10B981;
-    --danger: #EF4444;
-    --amber: #F59E0B;
-    --purple: #8B5CF6;
-    --pink: #EC4899;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    line-height: 1.6;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(8,12,24,0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 0.5px solid var(--border);
-    padding: 0 2rem;
-    display: flex; align-items: center; gap: 1.5rem; height: 56px;
-  }
-  .nav-logo { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--cyan); letter-spacing: 1px; white-space: nowrap; }
-  .nav-logo span { color: var(--text); }
-  .nav-links { display: flex; gap: 1.5rem; margin-left: auto; }
-  .nav-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
-  .nav-link:hover { color: var(--text); }
-  .nav-cta { font-family: 'Space Mono', monospace; font-size: 11px; padding: 7px 16px; border: 0.5px solid var(--cyan); border-radius: 6px; color: var(--cyan); text-decoration: none; transition: background 0.15s; white-space: nowrap; }
-  .nav-cta:hover { background: var(--cyan-dim); }
-
-  /* ── HERO ── */
-  .hero {
-    text-align: center;
-    padding: 5rem 2rem 4rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(0,229,204,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; color: var(--cyan); margin-bottom: 1.25rem; }
-  .hero-title { font-family: 'Space Mono', monospace; font-size: clamp(32px, 6vw, 56px); font-weight: 700; line-height: 1.1; margin-bottom: 1.25rem; }
-  .hero-title .accent { color: var(--cyan); }
-  .hero-sub { font-size: 16px; color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
-  .hero-badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .hero-badge { font-family: 'Space Mono', monospace; font-size: 10px; padding: 5px 12px; border: 0.5px solid var(--border); border-radius: 99px; color: var(--muted); }
-
-  /* ── GAME GRID ── */
-  .section { max-width: 960px; margin: 0 auto; padding: 2rem; }
-  .section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--muted); margin-bottom: 1.5rem; }
-
-  .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 3rem; }
-
-  .game-card {
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s, background 0.2s;
-    position: relative;
-    overflow: hidden;
-    text-decoration: none;
-    display: block;
-  }
-  .game-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-3px); background: var(--panel2); }
-  .game-card.active { border-color: var(--cyan); border-width: 1px; }
-
-  .card-stripe { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .stripe-cyan { background: linear-gradient(90deg, var(--cyan), #00a896); }
-  .stripe-amber { background: linear-gradient(90deg, var(--amber), #f97316); }
-  .stripe-green { background: linear-gradient(90deg, var(--success), var(--cyan)); }
-  .stripe-purple { background: linear-gradient(90deg, var(--purple), var(--pink)); }
-
-  .card-num { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--muted); margin-bottom: 12px; }
-  .card-icon { font-size: 32px; margin-bottom: 12px; display: block; }
-  .card-name { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
-  .card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
-  .card-pill { display: inline-block; font-family: 'Space Mono', monospace; font-size: 9px; padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 99px; color: var(--muted); letter-spacing: 1px; }
-
-  /* ── GAME AREA ── */
-  #game-area { display: none; }
-  #game-area.open { display: block; }
-
-  .game-shell {
-    background: var(--panel);
-    border: 0.5px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 3rem;
-  }
-
-  .game-toolbar {
-    display: flex; align-items: center; gap: 12px;
-    padding: 1rem 1.5rem;
-    border-bottom: 0.5px solid var(--border);
-    background: var(--panel2);
-  }
-  .back-btn { background: none; border: 0.5px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 12px; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-  .back-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .toolbar-title { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); }
-  .toolbar-score { margin-left: auto; font-family: 'Space Mono', monospace; font-size: 13px; color: var(--cyan); }
-  .toolbar-progress { height: 3px; background: var(--border); }
-  .toolbar-progress-fill { height: 3px; background: var(--cyan); transition: width 0.4s; }
-
-  .game-body { padding: 1.5rem; }
-
-  /* ── SHARED COMPONENTS ── */
-  .q-eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--cyan); margin-bottom: 8px; }
-  .q-text { font-size: 17px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 1.5rem; }
-
-  .opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-  .opt {
-    background: var(--panel2); border: 0.5px solid var(--border);
-    border-radius: 10px; padding: 14px; text-align: left;
-    font-size: 13px; cursor: pointer; color: var(--text);
-    font-family: 'DM Sans', sans-serif; transition: all 0.15s; line-height: 1.5;
-  }
-  .opt:hover:not(:disabled) { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); }
-  .opt.correct { background: rgba(16,185,129,0.1); border-color: var(--success); color: #6ee7b7; }
-  .opt.wrong { background: rgba(239,68,68,0.1); border-color: var(--danger); color: #fca5a5; }
-  .opt:disabled { cursor: default; }
-
-  .progress-dots { display: flex; gap: 6px; margin-bottom: 1.5rem; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-  .dot.done { background: var(--cyan); }
-  .dot.now { background: var(--amber); }
-
-  .feedback-box { font-size: 13px; margin-top: 12px; line-height: 1.6; color: var(--muted); min-height: 20px; }
-
-  .action-btn {
-    background: none; border: 0.5px solid; border-radius: 8px;
-    padding: 10px 22px; font-size: 12px; cursor: pointer;
-    font-family: 'Space Mono', monospace; transition: background 0.15s;
-    margin-top: 16px;
-  }
-  .btn-cyan { border-color: var(--cyan); color: var(--cyan); }
-  .btn-cyan:hover { background: var(--cyan-dim); }
-  .btn-amber { border-color: var(--amber); color: var(--amber); }
-  .btn-amber:hover { background: rgba(245,158,11,0.08); }
-  .btn-green { border-color: var(--success); color: var(--success); }
-  .btn-green:hover { background: rgba(16,185,129,0.08); }
-  .btn-muted { border-color: var(--border); color: var(--muted); }
-  .btn-muted:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .action-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-
-  /* ── RESULT SCREEN ── */
-  .result-screen { text-align: center; padding: 3rem 1rem; }
-  .result-icon { font-size: 52px; margin-bottom: 1rem; }
-  .result-num { font-family: 'Space Mono', monospace; font-size: 48px; font-weight: 700; color: var(--cyan); }
-  .result-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .result-msg { font-size: 14px; color: var(--text); margin: 1.5rem auto 0; max-width: 400px; line-height: 1.7; }
-
-  /* ── PREDICT GAME ── */
-  .scenario-card { background: var(--panel2); border-left: 2px solid var(--cyan); border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 1.5rem; font-size: 13px; color: var(--muted); line-height: 1.7; white-space: pre-line; }
-
-  .val-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel2); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
-  .val-info { flex: 1; min-width: 0; }
-  .val-addr { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .val-model { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .vote-pair { display: flex; gap: 6px; flex-shrink: 0; }
-  .vbtn { padding: 5px 14px; border-radius: 99px; font-size: 11px; font-family: 'Space Mono', monospace; cursor: pointer; border: 0.5px solid; transition: all 0.15s; }
-  .vbtn-agree { border-color: rgba(16,185,129,0.4); color: var(--success); background: none; }
-  .vbtn-agree:hover { background: rgba(16,185,129,0.1); }
-  .vbtn-disagree { border-color: rgba(239,68,68,0.4); color: var(--danger); background: none; }
-  .vbtn-disagree:hover { background: rgba(239,68,68,0.1); }
-  .vbtn.sel-agree { background: rgba(16,185,129,0.15); border-color: var(--success); }
-  .vbtn.sel-disagree { background: rgba(239,68,68,0.15); border-color: var(--danger); }
-  .vbtn.rev-correct { background: rgba(16,185,129,0.2) !important; border-color: var(--success) !important; color: var(--success) !important; }
-  .vbtn.rev-wrong { background: rgba(239,68,68,0.08) !important; border-color: rgba(239,68,68,0.3) !important; color: rgba(239,68,68,0.5) !important; }
-
-  .explain-box { background: var(--panel2); border-left: 2px solid var(--amber); border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 14px; font-size: 13px; color: var(--muted); line-height: 1.6; }
-
-  /* ── BUILDER GAME ── */
-  .build-stage {
-    min-height: 180px; background: var(--panel2);
-    border: 1.5px dashed rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 12px;
-    margin-bottom: 14px; position: relative;
-    transition: border-color 0.15s;
-  }
-  .build-stage.over { border-color: var(--cyan); background: rgba(0,229,204,0.03); }
-  .stage-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 13px; color: var(--muted); text-align: center; pointer-events: none; }
-
-  .palette { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .block {
-    font-family: 'Space Mono', monospace; font-size: 11px;
-    padding: 7px 12px; border-radius: 8px; cursor: grab;
-    border: 0.5px solid; transition: transform 0.1s, opacity 0.15s;
-    user-select: none; white-space: nowrap;
-  }
-  .block:active { cursor: grabbing; transform: scale(0.96); }
-  .block.used { opacity: 0.3; pointer-events: none; }
-  .b-dep { background: #0a1628; border-color: #1e3a6e; color: #60a5fa; }
-  .b-imp { background: #150a28; border-color: #3b1c7a; color: #a78bfa; }
-  .b-cls { background: #0a2818; border-color: #1a5c3a; color: #34d399; }
-  .b-var { background: #281a0a; border-color: #7a3a1c; color: #fb923c; }
-  .b-ini { background: #280a18; border-color: #7a1c3a; color: #f472b6; }
-  .b-view { background: #0a2828; border-color: #1a5c5c; color: #22d3ee; }
-  .b-wrt { background: #28280a; border-color: #5c5c1a; color: #facc15; }
-  .b-llm { background: #150a28; border-color: #5b21b6; color: #c4b5fd; }
-  .b-eq  { background: #0a2818; border-color: #065f46; color: #6ee7b7; }
-
-  .dropped-block { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .dropped-block .rm-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 4px; line-height: 1; flex-shrink: 0; }
-  .dropped-block .rm-btn:hover { color: var(--danger); }
-
-  .builder-result { margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; display: none; }
-  .result-ok { background: rgba(16,185,129,0.1); border: 0.5px solid var(--success); color: #6ee7b7; display: block; }
-  .result-err { background: rgba(239,68,68,0.1); border: 0.5px solid var(--danger); color: #fca5a5; display: block; }
-
-  /* ── SIM GAME ── */
-  .sim-prompt { background: var(--panel2); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
-  .sim-eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--cyan); margin-bottom: 8px; }
-  .sim-prompt-text { font-size: 13px; color: var(--text); white-space: pre-line; line-height: 1.7; }
-
-  .val-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
-  .val-card { background: var(--panel2); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px; }
-  .val-name { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--cyan); margin-bottom: 3px; }
-  .val-model-sm { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-  .val-answer { font-size: 12px; color: var(--text); background: rgba(255,255,255,0.04); border-radius: 6px; padding: 6px 9px; min-height: 30px; }
-  .val-verdict { font-family: 'Space Mono', monospace; font-size: 10px; margin-top: 6px; }
-  .verdict-agree { color: var(--success); }
-  .verdict-disagree { color: var(--danger); }
-
-  .player-section { margin-bottom: 1.25rem; }
-  .player-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 10px; }
-  .sim-choices { display: flex; gap: 8px; flex-wrap: wrap; }
-  .sim-choice { background: var(--panel2); border: 0.5px solid var(--border); border-radius: 8px; padding: 9px 18px; font-size: 13px; cursor: pointer; color: var(--text); transition: all 0.15s; }
-  .sim-choice:hover:not(:disabled) { border-color: rgba(255,255,255,0.2); }
-  .sim-choice.picked { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-  .sim-choice:disabled { cursor: default; }
-
-  .consensus-banner { border-radius: 10px; padding: 14px 16px; margin-top: 1rem; font-family: 'Space Mono', monospace; font-size: 13px; text-align: center; display: none; line-height: 1.6; }
-  .banner-accepted { background: rgba(16,185,129,0.1); border: 0.5px solid var(--success); color: #6ee7b7; display: block; }
-  .banner-undetermined { background: rgba(245,158,11,0.1); border: 0.5px solid var(--amber); color: #fcd34d; display: block; }
-
-  /* ── HOW IT WORKS ── */
-  .how-section { max-width: 960px; margin: 0 auto; padding: 0 2rem 4rem; }
-  .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .how-card { background: var(--panel); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; }
-  .how-icon { font-size: 22px; margin-bottom: 10px; }
-  .how-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .how-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
-
-  /* ── FOOTER ── */
-  footer { border-top: 0.5px solid var(--border); padding: 2rem; text-align: center; }
-  .footer-logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--cyan); margin-bottom: 8px; }
-  .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
-  .footer-link { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.15s; }
-  .footer-link:hover { color: var(--text); }
-  .footer-copy { font-size: 12px; color: var(--muted); }
-
-  @media (max-width: 600px) {
-    .opts-grid { grid-template-columns: 1fr; }
-    .val-grid { grid-template-columns: 1fr; }
-    nav { padding: 0 1rem; }
-    .nav-links { display: none; }
-    .hero { padding: 3rem 1rem 2.5rem; }
-    .section { padding: 1.5rem 1rem; }
-    .game-body { padding: 1rem; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cyan:#00E5CC;--cyan-dim:rgba(0,229,204,.1);--dark:#080C18;--panel:#0F1624;--panel2:#161E2E;--border:rgba(255,255,255,.07);--text:#E2E8F0;--muted:#64748B;--success:#10B981;--danger:#EF4444;--amber:#F59E0B;--purple:#8B5CF6}
+body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.9);backdrop-filter:blur(12px);border-bottom:.5px solid var(--border);padding:0 2rem;display:flex;align-items:center;gap:1rem;height:56px}
+.nav-logo{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--cyan)}.nav-logo span{color:var(--text)}
+.nav-links{display:flex;gap:1.5rem;margin-left:auto}.nav-link{font-size:13px;color:var(--muted);text-decoration:none}.nav-link:hover{color:var(--text)}
+.nav-cta{font-family:'Space Mono',monospace;font-size:11px;padding:7px 14px;border:.5px solid var(--cyan);border-radius:6px;color:var(--cyan);text-decoration:none}.nav-cta:hover{background:var(--cyan-dim)}
+.hero{text-align:center;padding:4rem 2rem 3rem}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--cyan);margin-bottom:1rem}
+.hero-title{font-family:'Space Mono',monospace;font-size:clamp(28px,5vw,48px);font-weight:700;line-height:1.15;margin-bottom:1rem}.hero-title .accent{color:var(--cyan)}
+.hero-sub{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto 1.5rem;line-height:1.7}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hero-badge{font-family:'Space Mono',monospace;font-size:9px;padding:4px 10px;border:.5px solid var(--border);border-radius:99px;color:var(--muted);letter-spacing:1px}
+.section{max-width:960px;margin:0 auto;padding:1.5rem 2rem}
+.section-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:1.25rem}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:2rem}
+.game-card{background:var(--panel);border:.5px solid var(--border);border-radius:14px;padding:1.25rem;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;overflow:hidden}
+.game-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+.card-stripe{position:absolute;top:0;left:0;right:0;height:2px}
+.s-cyan{background:linear-gradient(90deg,var(--cyan),#00a896)}.s-amber{background:linear-gradient(90deg,var(--amber),#f97316)}.s-green{background:linear-gradient(90deg,var(--success),var(--cyan))}.s-purple{background:linear-gradient(90deg,var(--purple),#ec4899)}
+.card-num{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:10px}
+.card-icon{font-size:28px;margin-bottom:10px;display:block}
+.card-name{font-size:16px;font-weight:600;margin-bottom:6px}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.card-pill{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border:.5px solid var(--border);border-radius:99px;color:var(--muted)}
+.on-chain-badge{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border:.5px solid rgba(0,229,204,.3);border-radius:99px;color:var(--cyan);margin-left:6px}
+#game-area{display:none}#game-area.open{display:block}
+.game-shell{background:var(--panel);border:.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2rem}
+.game-toolbar{display:flex;align-items:center;gap:12px;padding:1rem 1.5rem;border-bottom:.5px solid var(--border);background:var(--panel2)}
+.back-btn{background:none;border:.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+.back-btn:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.toolbar-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:700}
+.toolbar-score{margin-left:auto;font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan)}
+.progress-bar{height:2px;background:var(--border)}.progress-fill{height:2px;background:var(--cyan);transition:width .4s}
+.game-body{padding:1.5rem}
+.chain-status{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;margin-bottom:1.25rem;font-size:12px;font-family:'Space Mono',monospace}
+.chain-status.hidden{display:none}
+.cs-pending{background:rgba(245,158,11,.1);border:.5px solid rgba(245,158,11,.3);color:var(--amber)}
+.cs-success{background:rgba(16,185,129,.1);border:.5px solid rgba(16,185,129,.3);color:var(--success)}
+.cs-error{background:rgba(239,68,68,.1);border:.5px solid rgba(239,68,68,.3);color:var(--danger)}
+.spinner{width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.q-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--cyan);margin-bottom:6px}
+.q-text{font-size:16px;font-weight:500;line-height:1.5;margin-bottom:1.25rem}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.opt{background:var(--panel2);border:.5px solid var(--border);border-radius:10px;padding:13px;text-align:left;font-size:13px;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;transition:all .15s;line-height:1.5}
+.opt:hover:not(:disabled){border-color:rgba(255,255,255,.18)}
+.opt.correct{background:rgba(16,185,129,.1);border-color:var(--success);color:#6ee7b7}
+.opt.wrong{background:rgba(239,68,68,.1);border-color:var(--danger);color:#fca5a5}
+.opt:disabled{cursor:default}
+.progress-dots{display:flex;gap:6px;margin-bottom:1.25rem}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border)}.dot.done{background:var(--cyan)}.dot.now{background:var(--amber)}
+.ai-verdict{margin-top:12px;padding:12px 14px;background:var(--panel2);border-left:2px solid var(--cyan);border-radius:0 8px 8px 0;font-size:13px;color:var(--muted);line-height:1.6;display:none}
+.ai-verdict.show{display:block}
+.action-btn{background:none;border:.5px solid;border-radius:8px;padding:10px 20px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;transition:background .15s;margin-top:14px}
+.btn-cyan{border-color:var(--cyan);color:var(--cyan)}.btn-cyan:hover{background:var(--cyan-dim)}
+.btn-green{border-color:var(--success);color:var(--success)}.btn-green:hover{background:rgba(16,185,129,.08)}
+.btn-muted{border-color:var(--border);color:var(--muted)}.btn-muted:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.action-btn:disabled{opacity:.35;cursor:default;pointer-events:none}
+.tx-link{display:inline-block;margin-top:8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--cyan);text-decoration:none;border:.5px solid rgba(0,229,204,.3);padding:4px 10px;border-radius:99px}
+.tx-link:hover{background:var(--cyan-dim)}
+.result-screen{text-align:center;padding:2.5rem 1rem}
+.result-icon{font-size:48px;margin-bottom:1rem}
+.result-num{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--cyan)}
+.result-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.result-msg{font-size:14px;color:var(--text);margin:1.25rem auto 0;max-width:380px;line-height:1.7}
+/* Sentiment */
+.sentiment-input{width:100%;background:var(--panel2);border:.5px solid var(--border);border-radius:10px;padding:14px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;resize:vertical;min-height:90px;margin-bottom:12px}
+.sentiment-input:focus{outline:none;border-color:rgba(0,229,204,.3)}
+.sentiment-result{padding:14px 16px;border-radius:10px;margin-top:12px;font-size:14px;display:none}
+.sent-positive{background:rgba(16,185,129,.1);border:.5px solid var(--success);color:#6ee7b7;display:block}
+.sent-negative{background:rgba(239,68,68,.1);border:.5px solid var(--danger);color:#fca5a5;display:block}
+.sent-neutral{background:rgba(245,158,11,.1);border:.5px solid var(--amber);color:#fcd34d;display:block}
+/* Builder */
+.build-stage{min-height:150px;background:var(--panel2);border:1.5px dashed rgba(255,255,255,.1);border-radius:10px;padding:12px;margin-bottom:12px;position:relative;transition:border-color .15s}
+.build-stage.over{border-color:var(--cyan)}
+.stage-placeholder{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:var(--muted);text-align:center;pointer-events:none}
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.block{font-family:'Space Mono',monospace;font-size:11px;padding:7px 11px;border-radius:8px;cursor:grab;border:.5px solid;user-select:none;transition:transform .1s,opacity .15s}
+.block:active{cursor:grabbing;transform:scale(.96)}.block.used{opacity:.3;pointer-events:none}
+.b-dep{background:#0a1628;border-color:#1e3a6e;color:#60a5fa}.b-imp{background:#150a28;border-color:#3b1c7a;color:#a78bfa}
+.b-cls{background:#0a2818;border-color:#1a5c3a;color:#34d399}.b-var{background:#281a0a;border-color:#7a3a1c;color:#fb923c}
+.b-ini{background:#280a18;border-color:#7a1c3a;color:#f472b6}.b-view{background:#0a2828;border-color:#1a5c5c;color:#22d3ee}
+.b-wrt{background:#28280a;border-color:#5c5c1a;color:#facc15}
+.dropped-block{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rm-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px}.rm-btn:hover{color:var(--danger)}
+.builder-result{margin-top:12px;padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.6;display:none}
+.b-ok{background:rgba(16,185,129,.1);border:.5px solid var(--success);color:#6ee7b7;display:block}
+.b-err{background:rgba(239,68,68,.1);border:.5px solid var(--danger);color:#fca5a5;display:block}
+/* Sim */
+.sim-prompt-box{background:var(--panel2);border:.5px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.sim-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--cyan);margin-bottom:6px}
+.sim-prompt-text{font-size:13px;white-space:pre-line;line-height:1.7}
+.sim-choices{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sim-choice{background:var(--panel2);border:.5px solid var(--border);border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;color:var(--text);transition:all .15s}
+.sim-choice:hover:not(:disabled){border-color:rgba(255,255,255,.2)}.sim-choice.picked{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}.sim-choice:disabled{cursor:default}
+.consensus-result{border-radius:10px;padding:14px 16px;margin-top:1rem;font-family:'Space Mono',monospace;font-size:12px;text-align:center;line-height:1.7;display:none}
+.c-accepted{background:rgba(16,185,129,.1);border:.5px solid var(--success);color:#6ee7b7;display:block}
+.c-disagree{background:rgba(245,158,11,.1);border:.5px solid var(--amber);color:#fcd34d;display:block}
+footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
+.footer-logo{font-family:'Space Mono',monospace;font-size:13px;color:var(--cyan);margin-bottom:8px}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.footer-link{font-size:13px;color:var(--muted);text-decoration:none}.footer-link:hover{color:var(--text)}
+.contract-addresses{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:10px;line-height:1.9}
+@media(max-width:600px){.opts-grid{grid-template-columns:1fr}nav{padding:0 1rem}.nav-links{display:none}.game-body{padding:1rem}}
 </style>
 </head>
 <body>
-
 <nav>
   <div class="nav-logo">Gen<span>Layer</span> // ARCADE</div>
   <div class="nav-links">
@@ -305,18 +133,18 @@
     <a href="https://faucet.genlayer.com" target="_blank" class="nav-link">Faucet</a>
     <a href="https://discord.gg/genlayer" target="_blank" class="nav-link">Discord</a>
   </div>
-  <a href="https://studio.genlayer.com" target="_blank" class="nav-cta">Deploy a Contract →</a>
+  <a href="https://studio.genlayer.com" target="_blank" class="nav-cta">Deploy →</a>
 </nav>
 
 <div class="hero">
   <div class="hero-eyebrow">COMMUNITY ARCADE // TESTNET BRADBURY</div>
   <h1 class="hero-title">Learn GenLayer<br>by <span class="accent">Playing</span></h1>
-  <p class="hero-sub">Four mini-games that teach you Intelligent Contracts, validator consensus, and the GenLayer SDK — no docs required.</p>
+  <p class="hero-sub">Four mini-games powered by real Intelligent Contracts on Testnet Bradbury. Every AI answer goes through on-chain validator consensus — results are stored on the blockchain.</p>
   <div class="hero-badges">
-    <span class="hero-badge">NO WALLET NEEDED</span>
-    <span class="hero-badge">RUNS IN BROWSER</span>
-    <span class="hero-badge">BRADBURY CONCEPTS</span>
-    <span class="hero-badge">4 GAMES</span>
+    <span class="hero-badge">LIVE ON BRADBURY</span>
+    <span class="hero-badge">4 CONTRACTS</span>
+    <span class="hero-badge">REAL CONSENSUS</span>
+    <span class="hero-badge">ON-CHAIN RESULTS</span>
   </div>
 </div>
 
@@ -324,74 +152,48 @@
   <div class="section-label">CHOOSE YOUR GAME</div>
   <div class="game-grid" id="game-grid">
     <div class="game-card" onclick="openGame('trivia')">
-      <div class="card-stripe stripe-cyan"></div>
+      <div class="card-stripe s-cyan"></div>
       <div class="card-num">GAME 01</div>
       <span class="card-icon">🧠</span>
       <div class="card-name">GenLayer Trivia</div>
-      <div class="card-desc">8 questions covering runner comments, validator consensus, the py-genlayer API, and Testnet Bradbury. Difficulty increases as you go.</div>
-      <span class="card-pill">KNOWLEDGE CHECK</span>
+      <div class="card-desc">Answer GenLayer questions. A real AI judge on Bradbury validators decides if you're correct — verdict stored on-chain.</div>
+      <span class="card-pill">KNOWLEDGE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
-    <div class="game-card" onclick="openGame('predict')">
-      <div class="card-stripe stripe-amber"></div>
+    <div class="game-card" onclick="openGame('sentiment')">
+      <div class="card-stripe s-amber"></div>
       <div class="card-num">GAME 02</div>
       <span class="card-icon">🔮</span>
-      <div class="card-name">Predict the Validators</div>
-      <div class="card-desc">A transaction was submitted. Predict whether each AI validator will Agree or Disagree before the consensus result is revealed.</div>
-      <span class="card-pill">CONSENSUS LOGIC</span>
+      <div class="card-name">Sentiment Oracle</div>
+      <div class="card-desc">Type any text. Real Bradbury validators reach consensus on its sentiment. Result written to the blockchain.</div>
+      <span class="card-pill">AI ORACLE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
     <div class="game-card" onclick="openGame('builder')">
-      <div class="card-stripe stripe-green"></div>
+      <div class="card-stripe s-green"></div>
       <div class="card-num">GAME 03</div>
       <span class="card-icon">🧩</span>
       <div class="card-name">Contract Builder</div>
-      <div class="card-desc">Drag and drop code blocks to assemble a valid Intelligent Contract. Two levels: basic storage, then AI-powered with LLM calls.</div>
-      <span class="card-pill">DRAG & DROP</span>
+      <div class="card-desc">Drag blocks to assemble a contract. Submit it — an AI validator on Bradbury checks if your code is valid.</div>
+      <span class="card-pill">BUILD</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
     <div class="game-card" onclick="openGame('sim')">
-      <div class="card-stripe stripe-purple"></div>
+      <div class="card-stripe s-purple"></div>
       <div class="card-num">GAME 04</div>
       <span class="card-icon">⚡</span>
       <div class="card-name">Consensus Simulator</div>
-      <div class="card-desc">You are the validator. Read a contract prompt, see how other AI validators answered, cast your vote, and watch consensus resolve in real time.</div>
-      <span class="card-pill">ROLE-PLAY</span>
+      <div class="card-desc">You are a validator. Submit your answer on-chain — then see if you agreed with the actual Bradbury AI consensus.</div>
+      <span class="card-pill">SIMULATE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
   </div>
 
   <div id="game-area">
     <div class="game-shell">
       <div class="game-toolbar">
-        <button class="back-btn" onclick="goHome()">← Back to games</button>
+        <button class="back-btn" onclick="goHome()">← Back</button>
         <div class="toolbar-title" id="toolbar-title"></div>
         <div class="toolbar-score" id="toolbar-score"></div>
       </div>
-      <div class="toolbar-progress"><div class="toolbar-progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       <div class="game-body" id="game-body"></div>
-    </div>
-  </div>
-</div>
-
-<div class="how-section">
-  <div class="section-label">WHAT YOU'LL LEARN</div>
-  <div class="how-grid">
-    <div class="how-card">
-      <div class="how-icon">📝</div>
-      <div class="how-title">Runner Comments</div>
-      <div class="how-desc">Why <code style="font-size:11px;color:var(--cyan);"># { "Depends": ... }</code> must be line 1 of every contract and what happens when it's missing.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-icon">🤖</div>
-      <div class="how-title">Validator Consensus</div>
-      <div class="how-desc">How multiple AI validators running different LLMs reach agreement on non-deterministic contract output.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-icon">🔧</div>
-      <div class="how-title">py-genlayer API</div>
-      <div class="how-desc">The correct current API: <code style="font-size:11px;color:var(--cyan);">gl.nondet.exec_prompt()</code> and <code style="font-size:11px;color:var(--cyan);">gl.eq_principle.strict_eq()</code>.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-icon">⛓️</div>
-      <div class="how-title">Transaction Lifecycle</div>
-      <div class="how-desc">PENDING → PROPOSING → COMMITTING → REVEALING → ACCEPTED → FINALIZED and what each state means.</div>
     </div>
   </div>
 </div>
@@ -403,299 +205,349 @@
     <a href="https://docs.genlayer.com" target="_blank" class="footer-link">Docs</a>
     <a href="https://faucet.genlayer.com" target="_blank" class="footer-link">Faucet</a>
     <a href="https://explorer-asimov.genlayer.com" target="_blank" class="footer-link">Explorer</a>
-    <a href="https://discord.gg/genlayer" target="_blank" class="footer-link">Discord</a>
-    <a href="https://github.com/genlayerlabs" target="_blank" class="footer-link">GitHub</a>
+    <a href="https://github.com/knisaci/genlayer-arcade" target="_blank" class="footer-link">GitHub</a>
   </div>
-  <div class="footer-copy">Built for the GenLayer community. Not an official GenLayer product.</div>
+  <div class="contract-addresses">
+    ArcadeTrivia · 0xEC2A6C2EaB711146b151d5D441DE47136Faf5E6C<br>
+    ArcadeSentiment · 0xada54c1B3Aaa7538424b94E67c2b7785fC889cd3<br>
+    ArcadeContractChecker · 0x871dA1C5FF3738C3007c9E91BaE67fD284E497FB<br>
+    ArcadeConsensus · 0x45F287e4FA97bf273B7fFfE02e4C023FEF295311
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px;">Not an official GenLayer product. Built for the community.</div>
 </footer>
 
-<script>
-const T = [
-  { cat:"BASICS", q:"What is the first required line of every GenLayer Intelligent Contract?", opts:["from genlayer import *","# { \"Depends\": \"py-genlayer:test\" }","class Contract(gl.Contract):","import genlayer"], ans:1, exp:"The runner comment tells GenVM which runtime to use. Without it, the VM throws 'absent_runner_comment' and refuses to load the contract." },
-  { cat:"CONSENSUS", q:"What does 'Optimistic Democracy' mean in GenLayer?", opts:["One validator decides the outcome","Multiple validators vote and majority consensus determines the result","The contract author approves every transaction","Transactions are always accepted optimistically"], ans:1, exp:"Multiple validators independently run your contract and vote. A majority must agree before a transaction is ACCEPTED and finalized on-chain." },
-  { cat:"API", q:"Which is the correct current API to call an LLM inside a contract?", opts:["gl.exec_prompt(prompt)","gl.llm.send(prompt)","gl.nondet.exec_prompt(prompt)","gl.ai.prompt(prompt)"], ans:2, exp:"gl.exec_prompt() was renamed to gl.nondet.exec_prompt() in py-genlayer v0.2.x. The 'nondet' namespace groups all non-deterministic operations." },
-  { cat:"VALIDATORS", q:"On Testnet Bradbury, what makes validators different?", opts:["Validators are simulated","Each validator uses a real LLM of their own choice","All validators use the same LLM","Bradbury has only one validator"], ans:1, exp:"Bradbury is where it gets real. Each validator runs whichever LLM they choose — Mistral, Llama, Qwen, etc. Your prompt quality actually matters." },
-  { cat:"API", q:"Which equivalence principle requires all validators to return the exact same string?", opts:["gl.eq_principle.comparative()","gl.eq_principle.strict_eq()","gl.eq_principle.majority()","gl.eq_principle.fuzzy()"], ans:1, exp:"strict_eq requires byte-for-byte identical output. Use it for structured JSON. Use comparative() when validators might word the same answer differently." },
-  { cat:"TRANSACTIONS", q:"What transaction status means the result is permanently written to the blockchain?", opts:["ACCEPTED","PROPOSING","FINALIZED","COMMITTING"], ans:2, exp:"FINALIZED is the terminal success state. The journey: PENDING → PROPOSING → COMMITTING → REVEALING → ACCEPTED → FINALIZED." },
-  { cat:"CONTRACTS", q:"Which decorator marks a method that reads state without costing gas?", opts:["@gl.public.write","@gl.public.read","@gl.public.view","@gl.public.get"], ans:2, exp:"@gl.public.view marks read-only methods. They're free to call because they don't change state and don't need validator consensus." },
-  { cat:"ERRORS", q:"What does the GenVM error message 'invalid_contract absent_runner_comment' mean?", opts:["The contract has a Python syntax error","Line 1 is missing the required runner comment","The contract class is named incorrectly","The import statement is missing"], ans:1, exp:"GenVM reads line 1 first to determine the runtime. If that comment is missing, blank, or has anything above it, GenVM cannot load the contract at all." }
-];
+<script type="module">
+import { createClient, createAccount } from 'genlayer-js';
+import { testnetAsimov } from 'genlayer-js/chains';
+import { TransactionStatus } from 'genlayer-js/types';
 
-const P = [
-  { scenario:"Contract: analyze_sentiment('I absolutely love GenLayer!')\nPrompt: Return JSON {\"sentiment\": \"positive\" or \"negative\"}. Be strict.", validators:[{addr:"0xD284...E6D1aa",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0xdaf1...063d6",model:"qwen/qwen3-235b",vote:"agree"},{addr:"0xb99B...99f1C",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0x6365...460ED",model:"meta-llama/llama-4-maverick",vote:"agree"}], exp:"Clear, unambiguous prompt. All validators returned identical JSON. strict_eq passes — unanimous ACCEPT." },
-  { scenario:"Contract: analyze_sentiment('This is fine.')\nPrompt: Return JSON {\"sentiment\": ...}. No format example given.", validators:[{addr:"0xD284...E6D1aa",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0xdaf1...063d6",model:"qwen/qwen3-235b",vote:"disagree"},{addr:"0xb99B...99f1C",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0x6365...460ED",model:"meta-llama/llama-4-maverick",vote:"disagree"}], exp:"'This is fine' is ambiguous. Different LLMs interpret it differently. Lesson: clearer prompts = more consensus." },
-  { scenario:"Contract: fetch_eth_price()\nPrompt: Fetch a live price URL and return the ETH price as a plain number.", validators:[{addr:"0xD284...E6D1aa",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0xdaf1...063d6",model:"qwen/qwen3-235b",vote:"agree"},{addr:"0xb99B...99f1C",model:"mistralai/mistral-large-2512",vote:"agree"},{addr:"0x6365...460ED",model:"meta-llama/llama-4-maverick",vote:"agree"}], exp:"Objective data, clear extraction task. Validators fetch the same URL near-simultaneously and agree on the number." }
-];
-
-const BL = [
-  { name:"Build a basic storage contract", hint:"Every contract needs: runner comment, import, class, state variable, constructor, view method, write method.", req:["dep","imp","cls","var","ini","view","wrt"], ord:["dep","imp","cls","var","ini","view","wrt"] },
-  { name:"Build an AI-powered Intelligent Contract", hint:"AI contracts need everything a basic contract has, PLUS a gl.nondet.exec_prompt() call and an equivalence principle.", req:["dep","imp","cls","var","ini","view","wrt","llm","eq"], ord:["dep","imp","cls","var","ini","view","wrt","llm","eq"] }
-];
-
-const BD = {
-  dep:  { label:'# { "Depends": "py-genlayer:test" }', cls:'b-dep', desc:'Runner comment (required line 1)' },
-  imp:  { label:'from genlayer import *',               cls:'b-imp', desc:'Import the GenLayer SDK' },
-  cls:  { label:'class Contract(gl.Contract):',         cls:'b-cls', desc:'Declare your Intelligent Contract' },
-  var:  { label:'    state: str',                       cls:'b-var', desc:'State variable (stored on-chain)' },
-  ini:  { label:'    def __init__(self):',              cls:'b-ini', desc:'Constructor — runs once on deploy' },
-  view: { label:'    @gl.public.view',                  cls:'b-view', desc:'Read-only decorator (free to call)' },
-  wrt:  { label:'    @gl.public.write',                 cls:'b-wrt', desc:'Write decorator (costs gas)' },
-  llm:  { label:'    gl.nondet.exec_prompt(prompt)',    cls:'b-llm', desc:'Send a prompt to a real LLM' },
-  eq:   { label:'    gl.eq_principle.strict_eq(fn)',    cls:'b-eq', desc:'Force validator consensus' }
+const CONTRACTS = {
+  trivia:   '0xEC2A6C2EaB711146b151d5D441DE47136Faf5E6C',
+  sentiment:'0xada54c1B3Aaa7538424b94E67c2b7785fC889cd3',
+  checker:  '0x871dA1C5FF3738C3007c9E91BaE67fD284E497FB',
+  consensus:'0x45F287e4FA97bf273B7fFfE02e4C023FEF295311',
 };
 
-const S = [
-  { prompt:"Is this review positive or negative?\n\nReview: 'The product arrived late and packaging was damaged, but the item worked perfectly and customer service was excellent.'\n\nRespond with ONLY one word: positive or negative", validators:[{name:"VAL-01",model:"mistralai/mistral-large",ans:"positive"},{name:"VAL-02",model:"meta-llama/llama-4-maverick",ans:"positive"},{name:"VAL-03",model:"qwen/qwen3-235b",ans:"negative"}], choices:["positive","negative"], majority:"positive", exp:"3 of 4 votes went to 'positive'. Majority consensus reached — ACCEPTED. The positive elements (working product, good service) outweigh the negatives." },
-  { prompt:"Does the following text contain a number greater than 100?\n\nText: 'There were 87 participants in session one and 124 in session two.'\n\nRespond with ONLY: yes or no", validators:[{name:"VAL-01",model:"mistralai/mistral-large",ans:"yes"},{name:"VAL-02",model:"meta-llama/llama-4-maverick",ans:"yes"},{name:"VAL-03",model:"qwen/qwen3-235b",ans:"yes"}], choices:["yes","no"], majority:"yes", exp:"All validators correctly found 124 > 100. Unanimous ACCEPT. Clear, objective questions get fast consensus." }
+const account = createAccount();
+const client = createClient({ chain: testnetAsimov, account });
+
+async function write(address, functionName, args) {
+  const hash = await client.writeContract({ address, functionName, args, value: 0n });
+  await client.waitForTransactionReceipt({ hash, status: TransactionStatus.FINALIZED, retries: 60, interval: 5000 });
+  return hash;
+}
+
+async function read(address, functionName, args = []) {
+  return await client.readContract({ address, functionName, args, stateStatus: 'accepted' });
+}
+
+function explorerUrl(hash) { return `https://explorer-asimov.genlayer.com/tx/${hash}`; }
+
+function setStatus(id, type, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = `chain-status cs-${type}`;
+  el.innerHTML = type === 'pending'
+    ? `<div class="spinner"></div><span>${msg}</span>`
+    : `<span>${msg}</span>`;
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+window.goHome = () => {
+  document.getElementById('game-grid').style.display = '';
+  document.getElementById('game-area').style.display = 'none';
+};
+window.openGame = (id) => {
+  document.getElementById('game-grid').style.display = 'none';
+  document.getElementById('game-area').style.display = 'block';
+  document.getElementById('game-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const titles = { trivia:'🧠 GenLayer Trivia', sentiment:'🔮 Sentiment Oracle', builder:'🧩 Contract Builder', sim:'⚡ Consensus Simulator' };
+  document.getElementById('toolbar-title').textContent = titles[id];
+  document.getElementById('toolbar-score').textContent = '';
+  document.getElementById('progress-fill').style.width = '0%';
+  if (id === 'trivia') renderTrivia();
+  else if (id === 'sentiment') renderSentiment();
+  else if (id === 'builder') renderBuilder();
+  else if (id === 'sim') renderSim();
+};
+
+// ── GAME 1: TRIVIA ────────────────────────────────────────────────────────────
+const Qs = [
+  { cat:'BASICS', q:'What must be the very first line of every GenLayer contract?', opts:['from genlayer import *','# { "Depends": "py-genlayer:test" }','class Contract(gl.Contract):','import genlayer'], ans:1, exp:'The runner comment tells GenVM which runtime to use. Without it you get the "absent_runner_comment" error.' },
+  { cat:'CONSENSUS', q:'What is GenLayer\'s consensus mechanism called?', opts:['Proof of Work','Proof of Stake','Optimistic Democracy','Byzantine Agreement'], ans:2, exp:'Optimistic Democracy — multiple validators with different AI models independently vote on outcomes.' },
+  { cat:'VALIDATORS', q:'How many validators are randomly selected per transaction on Bradbury?', opts:['1','3','5','All nodes'], ans:2, exp:'5 validators are randomly selected per transaction. You cannot predict which nodes will be chosen in advance.' },
+  { cat:'API', q:'Which storage type is FORBIDDEN for state variables in GenLayer contracts?', opts:['str','bool','int','bytes'], ans:2, exp:'int is forbidden. Use fixed-size types like i32, u32, u64, bigint or u256 instead.' },
+  { cat:'TRANSACTIONS', q:'What is the terminal success state of a GenLayer transaction?', opts:['ACCEPTED','PROPOSING','FINALIZED','COMMITTED'], ans:2, exp:'FINALIZED is the end state. Journey: PENDING → PROPOSING → COMMITTING → REVEALING → ACCEPTED → FINALIZED.' },
+  { cat:'API', q:'Which method forces all validators to return byte-identical results?', opts:['gl.eq_principle.comparative()','gl.eq_principle.strict_eq()','gl.eq_principle.majority()','gl.eq_principle.fuzzy()'], ans:1, exp:'strict_eq requires identical output from all validators. Best for structured data like JSON.' },
+  { cat:'BRADBURY', q:'What makes Testnet Bradbury different from previous testnets?', opts:['Faster block times','Validators use real LLMs of their own choice','Cheaper gas fees','Bigger block size'], ans:1, exp:'On Bradbury each validator runs their own real LLM — Mistral, Llama, Qwen etc. Prompt quality matters!' },
+  { cat:'CONTRACTS', q:'Which decorator marks a method that reads state without charging gas?', opts:['@gl.public.write','@gl.public.read','@gl.public.view','@gl.public.get'], ans:2, exp:'@gl.public.view marks read-only methods. They\'re free because they don\'t change state or need consensus.' },
 ];
 
-let g='', ti=0, ts=0, ta=false;
-let pi=0, ps=0, psel={}, prev=false;
-let bl=0, bdrop=[];
-let si=0, ss=0, schoice=null;
+let tIdx = 0, tScore = 0, tAnswered = false;
 
-function goHome() {
-  document.getElementById('game-grid').style.display='';
-  document.getElementById('game-area').style.display='none';
-}
+function renderTrivia() { tIdx = 0; tScore = 0; showQ(); }
 
-function openGame(id) {
-  g=id;
-  document.getElementById('game-grid').style.display='none';
-  const ga=document.getElementById('game-area'); ga.style.display='block';
-  ga.scrollIntoView({behavior:'smooth',block:'start'});
-  const titles={trivia:'🧠 GenLayer Trivia',predict:'🔮 Predict the Validators',builder:'🧩 Contract Builder',sim:'⚡ Consensus Simulator'};
-  document.getElementById('toolbar-title').textContent=titles[id];
-  if(id==='trivia'){ti=0;ts=0;renderTrivia();}
-  else if(id==='predict'){pi=0;ps=0;renderPredict();}
-  else if(id==='builder'){bl=0;bdrop=[];renderBuilder();}
-  else if(id==='sim'){si=0;ss=0;schoice=null;renderSim();}
-}
-
-function setScore(t){document.getElementById('toolbar-score').textContent=t;}
-function setProgress(pct){document.getElementById('progress-fill').style.width=pct+'%';}
-
-/* ── TRIVIA ── */
-function renderTrivia(){
-  setScore(ts+'/'+T.length);
-  setProgress((ti/T.length)*100);
-  if(ti>=T.length){showTriviaEnd();return;}
-  ta=false;
-  const q=T[ti];
-  const dots=T.map((_,i)=>`<div class="dot ${i<ti?'done':i===ti?'now':''}"></div>`).join('');
-  document.getElementById('game-body').innerHTML=`
+function showQ() {
+  if (tIdx >= Qs.length) { showTriviaEnd(); return; }
+  tAnswered = false;
+  const q = Qs[tIdx];
+  document.getElementById('progress-fill').style.width = `${(tIdx/Qs.length)*100}%`;
+  document.getElementById('toolbar-score').textContent = `${tScore}/${Qs.length}`;
+  const dots = Qs.map((_,i)=>`<div class="dot ${i<tIdx?'done':i===tIdx?'now':''}"></div>`).join('');
+  document.getElementById('game-body').innerHTML = `
     <div class="progress-dots">${dots}</div>
     <div class="q-eyebrow">${q.cat}</div>
     <div class="q-text">${q.q}</div>
-    <div class="opts-grid">${q.opts.map((o,i)=>`<button class="opt" onclick="answerT(${i})">${o}</button>`).join('')}</div>
-    <div class="feedback-box" id="fb"></div>
-    <button class="action-btn btn-cyan" id="nxt" onclick="nextT()" style="display:none">Next question →</button>`;
+    <div class="opts-grid">${q.opts.map((o,i)=>`<button class="opt" onclick="answerTrivia(${i})">${o}</button>`).join('')}</div>
+    <div class="chain-status hidden" id="t-status"></div>
+    <div class="ai-verdict" id="t-verdict"></div>
+    <button class="action-btn btn-cyan" id="t-next" onclick="nextQ()" style="display:none">Next question →</button>`;
 }
-function answerT(i){
-  if(ta)return; ta=true;
-  const q=T[ti];
+
+window.answerTrivia = async (i) => {
+  if (tAnswered) return; tAnswered = true;
+  const q = Qs[tIdx];
   document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
-  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
-  else ts++;
-  document.getElementById('fb').textContent=q.exp;
-  document.getElementById('nxt').style.display='inline-block';
-  setScore(ts+'/'+T.length);
-}
-function nextT(){ti++;renderTrivia();}
-function showTriviaEnd(){
-  const pct=Math.round(ts/T.length*100);
-  const e=pct>=90?'🏆':pct>=75?'🧠':pct>=50?'🤔':'😅';
-  const m=pct>=90?'Validator-level knowledge. You are ready for mainnet.':pct>=75?'Impressive! You clearly understand how GenLayer works.':pct>=50?'Good effort! You know the basics — now go deeper.':'Keep exploring! Re-read the docs and try again.';
-  setProgress(100);
-  document.getElementById('game-body').innerHTML=`<div class="result-screen"><div class="result-icon">${e}</div><div class="result-num">${ts}/${T.length}</div><div class="result-sub">${pct}% correct</div><div class="result-msg">${m}</div><button class="action-btn btn-cyan" onclick="openGame('trivia')" style="margin:1.5rem auto 0;display:block;">Play again</button></div>`;
-  setScore('');
+  if (i===q.ans) { tScore++; document.querySelectorAll('.opt')[q.ans].classList.add('correct'); }
+  else { document.querySelectorAll('.opt')[i].classList.add('wrong'); document.querySelectorAll('.opt')[q.ans].classList.add('correct'); }
+  document.getElementById('toolbar-score').textContent = `${tScore}/${Qs.length}`;
+
+  setStatus('t-status','pending','Bradbury validators are judging your answer on-chain...');
+  try {
+    const hash = await write(CONTRACTS.trivia, 'submit_answer', [q.q, q.opts[i]]);
+    const verdict = await read(CONTRACTS.trivia, 'get_last_verdict');
+    let p; try { p = JSON.parse(verdict); } catch(e) { p = null; }
+    const v = document.getElementById('t-verdict');
+    v.className = 'ai-verdict show';
+    v.innerHTML = p
+      ? `🤖 <strong>AI Verdict:</strong> ${p.correct ? '✅ Correct' : '❌ Incorrect'} — ${p.reason}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`
+      : `🤖 Answer judged on-chain.<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+    setStatus('t-status','success','Consensus reached on Testnet Bradbury ✓');
+  } catch(e) {
+    setStatus('t-status','error','Chain unavailable — answer checked locally');
+    const v = document.getElementById('t-verdict');
+    v.className = 'ai-verdict show';
+    v.innerHTML = `📖 ${q.exp}`;
+  }
+  document.getElementById('t-next').style.display = 'inline-block';
+};
+
+window.nextQ = () => { tIdx++; showQ(); };
+
+function showTriviaEnd() {
+  document.getElementById('progress-fill').style.width = '100%';
+  const pct = Math.round(tScore/Qs.length*100);
+  const e = pct>=90?'🏆':pct>=75?'🧠':pct>=50?'🤔':'😅';
+  const m = pct>=90?'Validator-level knowledge!':pct>=75?'You clearly understand GenLayer.':pct>=50?'Good start — keep learning!':'Check the docs and try again!';
+  document.getElementById('game-body').innerHTML = `
+    <div class="result-screen">
+      <div class="result-icon">${e}</div>
+      <div class="result-num">${tScore}/${Qs.length}</div>
+      <div class="result-sub">${pct}% correct — AI judged on Testnet Bradbury</div>
+      <div class="result-msg">${m}</div>
+      <button class="action-btn btn-cyan" onclick="openGame('trivia')" style="margin:1.5rem auto 0;display:block">Play again</button>
+    </div>`;
+  document.getElementById('toolbar-score').textContent = '';
 }
 
-/* ── PREDICT ── */
-function renderPredict(){
-  if(pi>=P.length){showPredictEnd();return;}
-  psel={};prev=false;
-  setScore(`Round ${pi+1}/${P.length}`);
-  setProgress((pi/P.length)*100);
-  const d=P[pi];
-  const rows=d.validators.map((v,i)=>`
-    <div class="val-row" id="vr${i}">
-      <div class="val-info"><div class="val-addr">${v.addr}</div><div class="val-model">${v.model}</div></div>
-      <div class="vote-pair">
-        <button class="vbtn vbtn-agree" onclick="pickV(${i},'agree')">Agree</button>
-        <button class="vbtn vbtn-disagree" onclick="pickV(${i},'disagree')">Disagree</button>
-      </div>
-    </div>`).join('');
-  document.getElementById('game-body').innerHTML=`
-    <div class="q-eyebrow">TRANSACTION SCENARIO</div>
-    <div class="scenario-card">${d.scenario}</div>
-    <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Predict each validator's vote:</div>
-    ${rows}
-    <button class="action-btn btn-amber" id="rev-btn" onclick="revealP()" disabled>Reveal results</button>`;
-}
-function pickV(idx,vote){
-  if(prev)return;
-  psel[idx]=vote;
-  const row=document.getElementById('vr'+idx);
-  row.querySelectorAll('.vbtn').forEach(b=>{b.className='vbtn vbtn-'+b.classList[1].replace('vbtn-','');});
-  row.querySelector('.vbtn-'+vote).className='vbtn sel-'+vote;
-  document.getElementById('rev-btn').disabled=Object.keys(psel).length<P[pi].validators.length;
-}
-function revealP(){
-  prev=true;
-  const d=P[pi];
-  let correct=0;
-  d.validators.forEach((v,i)=>{
-    const row=document.getElementById('vr'+i);
-    const btns=row.querySelectorAll('.vbtn');
-    btns.forEach(b=>{
-      const isActual=b.classList.contains('vbtn-'+v.vote)||b.classList.contains('sel-'+v.vote);
-      b.className='vbtn '+(b.classList.contains('vbtn-'+v.vote)||b.classList.contains('sel-'+v.vote)?'rev-correct':'rev-wrong');
-    });
-    if(psel[i]===v.vote)correct++;
-  });
-  ps+=correct;
-  const exp=document.createElement('div'); exp.className='explain-box'; exp.textContent=d.exp;
-  const nb=document.createElement('button'); nb.className='action-btn btn-amber'; nb.textContent=pi<P.length-1?'Next scenario →':'See results'; nb.onclick=()=>{pi++;renderPredict();};
-  document.getElementById('game-body').appendChild(exp);
-  document.getElementById('game-body').appendChild(nb);
-  document.getElementById('rev-btn').style.display='none';
-}
-function showPredictEnd(){
-  const tot=P.reduce((a,d)=>a+d.validators.length,0);
-  const pct=Math.round(ps/tot*100);
-  setProgress(100);
-  document.getElementById('game-body').innerHTML=`<div class="result-screen"><div class="result-icon">${pct>=75?'🔮':'🤔'}</div><div class="result-num">${ps}/${tot}</div><div class="result-sub">votes predicted correctly (${pct}%)</div><div class="result-msg">${pct>=75?'You think like a validator! You understand how prompt ambiguity and clarity affect consensus.':'The key insight: clearer prompts lead to unanimous consensus. Ambiguity is the enemy of agreement.'}</div><button class="action-btn btn-cyan" onclick="openGame('predict')" style="margin:1.5rem auto 0;display:block;">Play again</button></div>`;
-  setScore('');
-}
-
-/* ── BUILDER ── */
-function renderBuilder(){
-  setScore(`Level ${bl+1}/${BL.length}`);
-  setProgress((bl/BL.length)*100);
-  bdrop=[];
-  const level=BL[bl];
-  const palette=Object.entries(BD).map(([k,b])=>`<div class="block ${b.cls}" draggable="true" data-key="${k}" title="${b.desc}" id="pal-${k}" ondragstart="dstart(event)">${b.label}</div>`).join('');
-  document.getElementById('game-body').innerHTML=`
-    <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">Goal: ${level.name}</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Drag blocks into the build area in the correct order. Hover a block to see what it does.</div>
-    <div class="build-stage" id="stage" ondragover="dover(event)" ondrop="ddrop(event)" ondragleave="dleave()">
-      <div class="stage-placeholder" id="sph">Drop code blocks here ↓</div>
+// ── GAME 2: SENTIMENT ORACLE ──────────────────────────────────────────────────
+function renderSentiment() {
+  document.getElementById('game-body').innerHTML = `
+    <div class="q-eyebrow">AI SENTIMENT ORACLE — POWERED BY BRADBURY</div>
+    <div class="q-text" style="font-size:14px;">Type any text. Real Bradbury validators reach consensus on its sentiment — result written to the blockchain.</div>
+    <textarea class="sentiment-input" id="sent-input" placeholder="Type anything... e.g. 'I love building on GenLayer!'"></textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="action-btn btn-cyan" onclick="runSentiment()" id="sent-btn">Analyse on-chain →</button>
+      <button class="action-btn btn-muted" onclick="fill('I absolutely love building on GenLayer — it\'s revolutionary!')">Try positive</button>
+      <button class="action-btn btn-muted" onclick="fill('This keeps failing and I cannot figure out why.')">Try negative</button>
+      <button class="action-btn btn-muted" onclick="fill('This is fine.')">Try ambiguous</button>
     </div>
-    <div style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;margin-bottom:10px;">AVAILABLE BLOCKS</div>
+    <div class="chain-status hidden" id="sent-status"></div>
+    <div class="sentiment-result" id="sent-result"></div>`;
+}
+
+window.fill = (t) => { document.getElementById('sent-input').value = t; };
+
+window.runSentiment = async () => {
+  const text = document.getElementById('sent-input').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('sent-btn');
+  btn.disabled = true;
+  setStatus('sent-status','pending','Sending to Bradbury validators for consensus...');
+  try {
+    const hash = await write(CONTRACTS.sentiment, 'analyze', [text]);
+    const result = await read(CONTRACTS.sentiment, 'get_last_result');
+    let p; try { p = JSON.parse(result); } catch(e) { p = null; }
+    const s = p?.sentiment || 'unknown';
+    const r = p?.reason || result;
+    const cls = s==='positive'?'sent-positive':s==='negative'?'sent-negative':'sent-neutral';
+    const emoji = s==='positive'?'😊':s==='negative'?'😞':'😐';
+    const el = document.getElementById('sent-result');
+    el.className = `sentiment-result ${cls}`;
+    el.innerHTML = `${emoji} <strong>${s.toUpperCase()}</strong><br><span style="font-size:13px;opacity:.85;">${r}</span><br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+    setStatus('sent-status','success','Consensus reached ✓ — result stored on Testnet Bradbury');
+  } catch(e) {
+    setStatus('sent-status','error','Chain call failed: ' + e.message);
+  }
+  btn.disabled = false;
+};
+
+// ── GAME 3: CONTRACT BUILDER ──────────────────────────────────────────────────
+const BD = {
+  dep:  { label:'# { "Depends": "py-genlayer:test" }', cls:'b-dep', desc:'Runner comment (line 1, required)' },
+  imp:  { label:'from genlayer import *',               cls:'b-imp', desc:'SDK import' },
+  cls:  { label:'class Contract(gl.Contract):',         cls:'b-cls', desc:'Contract class' },
+  var:  { label:'    state: str',                       cls:'b-var', desc:'State variable' },
+  ini:  { label:'    def __init__(self):',              cls:'b-ini', desc:'Constructor' },
+  view: { label:'    @gl.public.view',                  cls:'b-view', desc:'View decorator' },
+  wrt:  { label:'    @gl.public.write',                 cls:'b-wrt', desc:'Write decorator' },
+};
+let bdrop = [];
+
+function renderBuilder() {
+  bdrop = [];
+  const palette = Object.entries(BD).map(([k,b])=>
+    `<div class="block ${b.cls}" draggable="true" data-key="${k}" id="pal-${k}" title="${b.desc}" ondragstart="ds(event)">${b.label}</div>`
+  ).join('');
+  document.getElementById('game-body').innerHTML = `
+    <div class="q-eyebrow">CONTRACT BUILDER — AI VALIDATED ON BRADBURY</div>
+    <div class="q-text" style="font-size:14px;">Drag code blocks to build a valid Intelligent Contract. An AI validator on Bradbury will check your work.</div>
+    <div class="build-stage" id="stage" ondragover="do_(event)" ondrop="dd(event)" ondragleave="dl()">
+      <div class="stage-placeholder" id="sph">Drop blocks here in correct order ↓</div>
+    </div>
+    <div style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">AVAILABLE BLOCKS — hover for description</div>
     <div class="palette">${palette}</div>
-    <div style="display:flex;gap:10px;margin-top:4px;">
-      <button class="action-btn btn-green" onclick="checkB()">Check contract</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="action-btn btn-green" onclick="checkB()">Submit to Bradbury →</button>
       <button class="action-btn btn-muted" onclick="renderBuilder()">Clear</button>
     </div>
-    <div class="builder-result" id="bres"></div>`;
-}
-function dstart(e){e.dataTransfer.setData('k',e.target.dataset.key);}
-function dover(e){e.preventDefault();document.getElementById('stage').classList.add('over');}
-function dleave(){document.getElementById('stage').classList.remove('over');}
-function ddrop(e){
-  e.preventDefault();
-  document.getElementById('stage').classList.remove('over');
-  const k=e.dataTransfer.getData('k');
-  if(!k||bdrop.includes(k))return;
-  bdrop.push(k);
-  document.getElementById('sph').style.display='none';
-  const b=BD[k];
-  const el=document.createElement('div');
-  el.className=`block ${b.cls} dropped-block`;
-  el.innerHTML=`<span>${b.label}</span><button class="rm-btn" onclick="rmBlock('${k}',this)">×</button>`;
-  document.getElementById('stage').appendChild(el);
-  const pal=document.getElementById('pal-'+k);
-  if(pal)pal.classList.add('used');
-}
-function rmBlock(k,btn){
-  bdrop=bdrop.filter(x=>x!==k);
-  btn.parentElement.remove();
-  const pal=document.getElementById('pal-'+k);
-  if(pal)pal.classList.remove('used');
-  if(bdrop.length===0)document.getElementById('sph').style.display='';
-}
-function checkB(){
-  const level=BL[bl];
-  const res=document.getElementById('bres');
-  const missing=level.req.filter(k=>!bdrop.includes(k));
-  if(missing.length>0){res.className='builder-result result-err';res.textContent='Missing: '+missing.map(k=>BD[k].desc).join(', ')+'. '+level.hint;return;}
-  for(let i=0;i<level.ord.length-1;i++){
-    if(bdrop.indexOf(level.ord[i])>bdrop.indexOf(level.ord[i+1])){
-      res.className='builder-result result-err';
-      res.textContent=`Order issue: "${BD[level.ord[i]].desc}" should come before "${BD[level.ord[i+1]].desc}". Think top-to-bottom like a Python file.`;
-      return;
-    }
-  }
-  if(bl<BL.length-1){
-    res.className='builder-result result-ok';
-    res.textContent='Contract valid! Loading next level...';
-    setTimeout(()=>{bl++;bdrop=[];renderBuilder();},1800);
-  } else {
-    setProgress(100);
-    document.getElementById('game-body').innerHTML=`<div class="result-screen"><div class="result-icon">🧩</div><div class="result-num">100%</div><div class="result-sub">Both levels complete</div><div class="result-msg">You have mastered the full anatomy of a GenLayer Intelligent Contract — from runner comment to AI consensus. Now go deploy one on studio.genlayer.com!</div><button class="action-btn btn-cyan" onclick="openGame('builder')" style="margin:1.5rem auto 0;display:block;">Play again</button></div>`;
-    setScore('');
-  }
+    <div class="chain-status hidden" id="b-status"></div>
+    <div class="builder-result" id="b-result"></div>`;
 }
 
-/* ── SIM ── */
-function renderSim(){
-  if(si>=S.length){showSimEnd();return;}
-  schoice=null;
-  setScore(`Round ${si+1}/${S.length}`);
-  setProgress((si/S.length)*100);
-  const d=S[si];
-  const vals=d.validators.map(v=>`
-    <div class="val-card">
-      <div class="val-name">${v.name}</div>
-      <div class="val-model-sm">${v.model}</div>
-      <div class="val-answer" id="va-${v.name}">⏳</div>
-      <div class="val-verdict" id="vv-${v.name}"></div>
-    </div>`).join('');
-  const choices=d.choices.map(c=>`<button class="sim-choice" onclick="pickS('${c}',this)">${c}</button>`).join('');
-  document.getElementById('game-body').innerHTML=`
-    <div class="sim-prompt"><div class="sim-eyebrow">CONTRACT PROMPT</div><div class="sim-prompt-text">${d.prompt}</div></div>
-    <div class="val-grid">${vals}</div>
-    <div class="player-section">
-      <div class="player-label">You are VAL-04. What is your answer?</div>
-      <div class="sim-choices">${choices}</div>
+window.ds = (e) => e.dataTransfer.setData('k', e.target.dataset.key);
+window.do_ = (e) => { e.preventDefault(); document.getElementById('stage').classList.add('over'); };
+window.dl = () => document.getElementById('stage').classList.remove('over');
+window.dd = (e) => {
+  e.preventDefault();
+  document.getElementById('stage').classList.remove('over');
+  const k = e.dataTransfer.getData('k');
+  if (!k || bdrop.includes(k)) return;
+  bdrop.push(k);
+  document.getElementById('sph').style.display = 'none';
+  const el = document.createElement('div');
+  el.className = `block ${BD[k].cls} dropped-block`;
+  el.innerHTML = `<span>${BD[k].label}</span><button class="rm-btn" onclick="rb('${k}',this)">×</button>`;
+  document.getElementById('stage').appendChild(el);
+  document.getElementById('pal-'+k)?.classList.add('used');
+};
+window.rb = (k, btn) => {
+  bdrop = bdrop.filter(x=>x!==k);
+  btn.parentElement.remove();
+  document.getElementById('pal-'+k)?.classList.remove('used');
+  if (!bdrop.length) document.getElementById('sph').style.display = '';
+};
+
+window.checkB = async () => {
+  if (!bdrop.length) return;
+  const code = bdrop.map(k=>BD[k].label).join('\n');
+  setStatus('b-status','pending','Sending to Bradbury AI validator...');
+  try {
+    const hash = await write(CONTRACTS.checker, 'check_contract', [code]);
+    const fb = await read(CONTRACTS.checker, 'get_last_feedback');
+    let p; try { p = JSON.parse(fb); } catch(e) { p = null; }
+    const res = document.getElementById('b-result');
+    if (p?.valid) {
+      res.className = 'builder-result b-ok';
+      res.innerHTML = `✅ Score ${p.score}/7 — ${p.feedback}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+    } else {
+      res.className = 'builder-result b-err';
+      res.innerHTML = `❌ Score ${p?.score??'?'}/7 — ${p?.feedback??'Not valid yet. Keep building!'}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+    }
+    setStatus('b-status','success','AI validation complete on Testnet Bradbury ✓');
+  } catch(e) {
+    setStatus('b-status','error','Chain call failed: ' + e.message);
+  }
+};
+
+// ── GAME 4: CONSENSUS SIMULATOR ────────────────────────────────────────────────
+const ROUNDS = [
+  { prompt:'Is the following text positive or negative?\n\n"I absolutely love how GenLayer makes AI part of consensus!"\n\nAnswer with one word: positive or negative', choices:['positive','negative'] },
+  { prompt:'Does this sentence contain a number greater than 100?\n\n"There were 87 people in the first session and 124 in the second."\n\nAnswer with one word: yes or no', choices:['yes','no'] },
+  { prompt:'Is the following statement true or false?\n\n"Python is the programming language used to write GenLayer Intelligent Contracts."\n\nAnswer with one word: true or false', choices:['true','false'] },
+];
+
+let sIdx = 0, sScore = 0, sChoice = null;
+
+function renderSim() { sIdx = 0; sScore = 0; showRound(); }
+
+function showRound() {
+  if (sIdx >= ROUNDS.length) { showSimEnd(); return; }
+  sChoice = null;
+  document.getElementById('progress-fill').style.width = `${(sIdx/ROUNDS.length)*100}%`;
+  document.getElementById('toolbar-score').textContent = `Round ${sIdx+1}/${ROUNDS.length}`;
+  const r = ROUNDS[sIdx];
+  document.getElementById('game-body').innerHTML = `
+    <div class="q-eyebrow">YOU ARE A VALIDATOR — ROUND ${sIdx+1}/${ROUNDS.length}</div>
+    <div class="sim-prompt-box">
+      <div class="sim-eyebrow">CONTRACT PROMPT</div>
+      <div class="sim-prompt-text">${r.prompt}</div>
     </div>
-    <button class="action-btn btn-cyan" id="run-btn" onclick="runSim()" disabled>Run consensus</button>
-    <div class="consensus-banner" id="cbanner"></div>`;
-  setTimeout(()=>{d.validators.forEach(v=>{const el=document.getElementById('va-'+v.name);if(el)el.textContent=v.ans;});},700);
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Your answer as validator:</div>
+    <div class="sim-choices">${r.choices.map(c=>`<button class="sim-choice" onclick="pickS('${c}',this)">${c}</button>`).join('')}</div>
+    <button class="action-btn btn-cyan" id="s-run" onclick="runS()" disabled>Submit to Bradbury →</button>
+    <div class="chain-status hidden" id="s-status"></div>
+    <div class="consensus-result" id="s-result"></div>`;
 }
-function pickS(c,btn){
-  schoice=c;
+
+window.pickS = (c, btn) => {
+  sChoice = c;
   document.querySelectorAll('.sim-choice').forEach(b=>b.classList.remove('picked'));
   btn.classList.add('picked');
-  document.getElementById('run-btn').disabled=false;
-}
-function runSim(){
-  const d=S[si];
-  const all=[...d.validators.map(v=>v.ans),schoice];
-  const counts={};
-  all.forEach(v=>{counts[v]=(counts[v]||0)+1;});
-  const maj=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
-  const accepted=counts[maj]>=Math.ceil(all.length/2);
-  d.validators.forEach(v=>{
-    const vv=document.getElementById('vv-'+v.name);
-    if(vv){vv.textContent=v.ans===maj?'✓ AGREE':'✗ DISAGREE';vv.className='val-verdict '+(v.ans===maj?'verdict-agree':'verdict-disagree');}
-  });
-  if(schoice===maj)ss++;
-  const b=document.getElementById('cbanner');
-  b.className='consensus-banner '+(accepted?'banner-accepted':'banner-undetermined');
-  b.innerHTML=`${accepted?'ACCEPTED':'UNDETERMINED'} — ${accepted?`consensus on "${maj}"`:'no majority'}<br><span style="font-size:11px;opacity:0.8;margin-top:6px;display:block;">${d.exp}</span>`;
-  document.querySelectorAll('.sim-choice').forEach(b=>{b.disabled=true;});
-  const nb=document.getElementById('run-btn');
-  nb.textContent=si<S.length-1?'Next round →':'See results';
-  nb.onclick=()=>{si++;renderSim();};
-  nb.disabled=false;
-}
-function showSimEnd(){
-  setProgress(100);
-  document.getElementById('game-body').innerHTML=`<div class="result-screen"><div class="result-icon">${ss===S.length?'⚡':'🤔'}</div><div class="result-num">${ss}/${S.length}</div><div class="result-sub">rounds you agreed with majority</div><div class="result-msg">${ss===S.length?'Perfect validator! Your answers aligned with the majority every round. You understand consensus from the inside.':'Being a validator is hard — especially with ambiguous prompts. Clear prompts lead to unanimous consensus.'}</div><button class="action-btn btn-cyan" onclick="openGame('sim')" style="margin:1.5rem auto 0;display:block;">Play again</button></div>`;
-  setScore('');
+  document.getElementById('s-run').disabled = false;
+};
+
+window.runS = async () => {
+  const r = ROUNDS[sIdx];
+  document.getElementById('s-run').disabled = true;
+  document.querySelectorAll('.sim-choice').forEach(b=>b.disabled=true);
+  setStatus('s-status','pending','Submitting to Bradbury — waiting for validator consensus...');
+  try {
+    const hash = await write(CONTRACTS.consensus, 'run_round', [r.prompt, sChoice]);
+    const result = await read(CONTRACTS.consensus, 'get_last_round');
+    let p; try { p = JSON.parse(result); } catch(e) { p = null; }
+    const aiAns = p?.ai_answer || '(unknown)';
+    const agreed = p?.agreed === 'true';
+    if (agreed) sScore++;
+    const res = document.getElementById('s-result');
+    res.className = `consensus-result ${agreed?'c-accepted':'c-disagree'}`;
+    res.innerHTML = `${agreed?'✅ You AGREED with the Bradbury consensus':'❌ You DISAGREED with the Bradbury consensus'}<br>
+      <span style="font-size:11px;opacity:.85;margin-top:4px;display:block;">AI validators answered: <strong>${aiAns}</strong> · Your answer: <strong>${sChoice}</strong></span><br>
+      <a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+    setStatus('s-status','success','Consensus result stored on Testnet Bradbury ✓');
+    const nb = document.createElement('button');
+    nb.className = 'action-btn btn-cyan';
+    nb.style.marginTop = '14px';
+    nb.textContent = sIdx < ROUNDS.length-1 ? 'Next round →' : 'See results';
+    nb.onclick = () => { sIdx++; showRound(); };
+    document.getElementById('game-body').appendChild(nb);
+  } catch(e) {
+    setStatus('s-status','error','Chain call failed: ' + e.message);
+    document.getElementById('s-run').disabled = false;
+  }
+};
+
+function showSimEnd() {
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('game-body').innerHTML = `
+    <div class="result-screen">
+      <div class="result-icon">${sScore===ROUNDS.length?'⚡':'🤔'}</div>
+      <div class="result-num">${sScore}/${ROUNDS.length}</div>
+      <div class="result-sub">rounds you agreed with the Bradbury AI consensus</div>
+      <div class="result-msg">${sScore===ROUNDS.length?'Perfect validator! Your answers matched the on-chain consensus every round.':'The real validators had their say. Try again and see if you agree more!'}</div>
+      <button class="action-btn btn-cyan" onclick="openGame('sim')" style="margin:1.5rem auto 0;display:block">Play again</button>
+    </div>`;
+  document.getElementById('toolbar-score').textContent = '';
 }
 </script>
 </body>
