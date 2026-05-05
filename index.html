@@ -43,7 +43,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.9);backdrop-filte
 .card-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px}
 .card-pill{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border:.5px solid var(--border);border-radius:99px;color:var(--muted)}
 .on-chain-badge{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border:.5px solid rgba(0,229,204,.3);border-radius:99px;color:var(--cyan);margin-left:6px}
-#game-area{display:none}#game-area.open{display:block}
+#game-area{display:none}
 .game-shell{background:var(--panel);border:.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:2rem}
 .game-toolbar{display:flex;align-items:center;gap:12px;padding:1rem 1.5rem;border-bottom:.5px solid var(--border);background:var(--panel2)}
 .back-btn{background:none;border:.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
@@ -52,13 +52,31 @@ nav{position:sticky;top:0;z-index:100;background:rgba(8,12,24,.9);backdrop-filte
 .toolbar-score{margin-left:auto;font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan)}
 .progress-bar{height:2px;background:var(--border)}.progress-fill{height:2px;background:var(--cyan);transition:width .4s}
 .game-body{padding:1.5rem}
-.chain-status{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;margin-bottom:1.25rem;font-size:12px;font-family:'Space Mono',monospace}
+.chain-status{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;margin-bottom:1rem;font-size:12px;font-family:'Space Mono',monospace}
 .chain-status.hidden{display:none}
 .cs-pending{background:rgba(245,158,11,.1);border:.5px solid rgba(245,158,11,.3);color:var(--amber)}
 .cs-success{background:rgba(16,185,129,.1);border:.5px solid rgba(16,185,129,.3);color:var(--success)}
 .cs-error{background:rgba(239,68,68,.1);border:.5px solid rgba(239,68,68,.3);color:var(--danger)}
 .spinner{width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Validator Reveal Panel */
+.validator-reveal{background:var(--panel2);border:.5px solid var(--border);border-radius:12px;padding:14px;margin-top:14px;display:none}
+.validator-reveal.show{display:block}
+.vr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.vr-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--cyan)}
+.vr-note{font-size:11px;color:var(--muted);font-style:italic}
+.validator-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--dark);border:.5px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:12px}
+.validator-row:last-child{margin-bottom:0}
+.vr-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);width:20px;flex-shrink:0}
+.vr-addr{font-family:'Space Mono',monospace;font-size:10px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vr-role{font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.role-leader{background:rgba(245,158,11,.15);border:.5px solid rgba(245,158,11,.4);color:var(--amber)}
+.role-validator{background:rgba(100,116,139,.1);border:.5px solid rgba(100,116,139,.3);color:var(--muted)}
+.vr-vote{font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.vote-agree{background:rgba(16,185,129,.1);border:.5px solid rgba(16,185,129,.3);color:var(--success)}
+.vote-disagree{background:rgba(239,68,68,.1);border:.5px solid rgba(239,68,68,.3);color:var(--danger)}
+.vr-unknown{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;padding:8px;font-style:italic}
+/* Common game elements */
 .q-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--cyan);margin-bottom:6px}
 .q-text{font-size:16px;font-weight:500;line-height:1.5;margin-bottom:1.25rem}
 .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
@@ -139,12 +157,12 @@ footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
 <div class="hero">
   <div class="hero-eyebrow">COMMUNITY ARCADE // TESTNET BRADBURY</div>
   <h1 class="hero-title">Learn GenLayer<br>by <span class="accent">Playing</span></h1>
-  <p class="hero-sub">Four mini-games powered by real Intelligent Contracts on Testnet Bradbury. Every AI answer goes through on-chain validator consensus — results are stored on the blockchain.</p>
+  <p class="hero-sub">Four mini-games powered by real Intelligent Contracts on Testnet Bradbury. Every action goes through on-chain validator consensus — then reveals which real validators judged it.</p>
   <div class="hero-badges">
     <span class="hero-badge">LIVE ON BRADBURY</span>
-    <span class="hero-badge">4 CONTRACTS</span>
-    <span class="hero-badge">REAL CONSENSUS</span>
+    <span class="hero-badge">REAL VALIDATORS REVEALED</span>
     <span class="hero-badge">ON-CHAIN RESULTS</span>
+    <span class="hero-badge">4 GAMES</span>
   </div>
 </div>
 
@@ -156,7 +174,7 @@ footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
       <div class="card-num">GAME 01</div>
       <span class="card-icon">🧠</span>
       <div class="card-name">GenLayer Trivia</div>
-      <div class="card-desc">Answer GenLayer questions. A real AI judge on Bradbury validators decides if you're correct — verdict stored on-chain.</div>
+      <div class="card-desc">Answer questions. A real AI judge on Bradbury decides if you're correct. See which validators were randomly selected after consensus.</div>
       <span class="card-pill">KNOWLEDGE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
     <div class="game-card" onclick="openGame('sentiment')">
@@ -164,7 +182,7 @@ footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
       <div class="card-num">GAME 02</div>
       <span class="card-icon">🔮</span>
       <div class="card-name">Sentiment Oracle</div>
-      <div class="card-desc">Type any text. Real Bradbury validators reach consensus on its sentiment. Result written to the blockchain.</div>
+      <div class="card-desc">Type any text. 5 randomly selected Bradbury validators reach consensus on its sentiment. Validator set revealed after finality.</div>
       <span class="card-pill">AI ORACLE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
     <div class="game-card" onclick="openGame('builder')">
@@ -172,7 +190,7 @@ footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
       <div class="card-num">GAME 03</div>
       <span class="card-icon">🧩</span>
       <div class="card-name">Contract Builder</div>
-      <div class="card-desc">Drag blocks to assemble a contract. Submit it — an AI validator on Bradbury checks if your code is valid.</div>
+      <div class="card-desc">Drag blocks to build a contract. Submit it on-chain — real validators check its validity. See who was selected to judge your code.</div>
       <span class="card-pill">BUILD</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
     <div class="game-card" onclick="openGame('sim')">
@@ -180,7 +198,7 @@ footer{border-top:.5px solid var(--border);padding:2rem;text-align:center}
       <div class="card-num">GAME 04</div>
       <span class="card-icon">⚡</span>
       <div class="card-name">Consensus Simulator</div>
-      <div class="card-desc">You are a validator. Submit your answer on-chain — then see if you agreed with the actual Bradbury AI consensus.</div>
+      <div class="card-desc">You are a validator. Submit your answer — you don't know who else was selected or which LLMs they run. Find out after consensus.</div>
       <span class="card-pill">SIMULATE</span><span class="on-chain-badge">⛓ ON-CHAIN</span>
     </div>
   </div>
@@ -221,6 +239,7 @@ import { createClient, createAccount } from 'genlayer-js';
 import { testnetAsimov } from 'genlayer-js/chains';
 import { TransactionStatus } from 'genlayer-js/types';
 
+// ── Contract addresses ────────────────────────────────────────────────────────
 const CONTRACTS = {
   trivia:   '0xEC2A6C2EaB711146b151d5D441DE47136Faf5E6C',
   sentiment:'0xada54c1B3Aaa7538424b94E67c2b7785fC889cd3',
@@ -228,9 +247,13 @@ const CONTRACTS = {
   consensus:'0x45F287e4FA97bf273B7fFfE02e4C023FEF295311',
 };
 
+// GenLayer RPC endpoint for Testnet Bradbury / Asimov
+const RPC_URL = 'https://studio.genlayer.com/api';
+
 const account = createAccount();
 const client = createClient({ chain: testnetAsimov, account });
 
+// ── Core helpers ──────────────────────────────────────────────────────────────
 async function write(address, functionName, args) {
   const hash = await client.writeContract({ address, functionName, args, value: 0n });
   await client.waitForTransactionReceipt({ hash, status: TransactionStatus.FINALIZED, retries: 60, interval: 5000 });
@@ -239,6 +262,106 @@ async function write(address, functionName, args) {
 
 async function read(address, functionName, args = []) {
   return await client.readContract({ address, functionName, args, stateStatus: 'accepted' });
+}
+
+// ── Fetch real validator set from transaction receipt via RPC ─────────────────
+async function fetchValidators(txHash) {
+  try {
+    const res = await fetch(RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'gen_getTransactionReceipt',
+        params: [{ txId: txHash }],
+        id: 1
+      })
+    });
+    const data = await res.json();
+    if (data?.result) {
+      return {
+        consumed: data.result.consumedValidators || [],
+        roundData: data.result.roundData || [],
+        leaderAddress: data.result.leaderAddress || null,
+      };
+    }
+  } catch(e) {
+    console.warn('Could not fetch validator data:', e);
+  }
+  return null;
+}
+
+// ── Render validator reveal panel ─────────────────────────────────────────────
+function renderValidatorReveal(containerId, txHash, validatorData) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.className = 'validator-reveal show';
+
+  // Important honest note about Bradbury
+  const bradburyNote = `
+    <div class="vr-note" style="margin-bottom:10px;font-size:11px;line-height:1.5;color:var(--muted);">
+      ℹ️ On Testnet Bradbury, 5 validators are <strong>randomly selected</strong> per transaction.
+      You cannot know in advance which nodes will be chosen or which LLMs they run —
+      each validator configures their own model independently.
+    </div>`;
+
+  if (!validatorData || !validatorData.consumed || validatorData.consumed.length === 0) {
+    el.innerHTML = `
+      <div class="vr-header">
+        <div class="vr-title">VALIDATOR SET</div>
+        <a href="https://explorer-asimov.genlayer.com/tx/${txHash}" target="_blank" class="tx-link">Explorer ↗</a>
+      </div>
+      ${bradburyNote}
+      <div class="vr-unknown">Validator addresses not available in receipt — view full details on Explorer.</div>`;
+    return;
+  }
+
+  const { consumed, roundData, leaderAddress } = validatorData;
+
+  // Build vote map from roundData if available
+  const voteMap = {};
+  if (roundData && roundData.length > 0) {
+    for (const round of roundData) {
+      if (round.validators) {
+        for (const v of round.validators) {
+          if (v.address) voteMap[v.address.toLowerCase()] = v.vote || null;
+        }
+      }
+    }
+  }
+
+  const rows = consumed.map((addr, i) => {
+    const isLeader = leaderAddress && addr.toLowerCase() === leaderAddress.toLowerCase();
+    const vote = voteMap[addr.toLowerCase()];
+    const shortAddr = addr.slice(0, 6) + '...' + addr.slice(-4);
+    const roleEl = isLeader
+      ? `<span class="vr-role role-leader">LEADER</span>`
+      : `<span class="vr-role role-validator">VALIDATOR</span>`;
+    const voteEl = vote === 'agree' || vote === 'Agree'
+      ? `<span class="vr-vote vote-agree">✓ AGREE</span>`
+      : vote === 'disagree' || vote === 'Disagree'
+        ? `<span class="vr-vote vote-disagree">✗ DISAGREE</span>`
+        : '';
+    return `
+      <div class="validator-row">
+        <div class="vr-num">${i + 1}</div>
+        <div class="vr-addr" title="${addr}">${shortAddr}</div>
+        ${roleEl}
+        ${voteEl}
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="vr-header">
+      <div class="vr-title">⛓ VALIDATOR SET REVEALED — ${consumed.length} VALIDATORS</div>
+      <a href="https://explorer-asimov.genlayer.com/tx/${txHash}" target="_blank" class="tx-link">Explorer ↗</a>
+    </div>
+    ${bradburyNote}
+    ${rows}
+    <div style="font-size:11px;color:var(--muted);margin-top:10px;font-style:italic;">
+      These validators were randomly selected after you submitted the transaction.
+      Their LLM choices are determined by their individual node configurations.
+    </div>`;
 }
 
 function explorerUrl(hash) { return `https://explorer-asimov.genlayer.com/tx/${hash}`; }
@@ -257,11 +380,18 @@ window.goHome = () => {
   document.getElementById('game-grid').style.display = '';
   document.getElementById('game-area').style.display = 'none';
 };
+
 window.openGame = (id) => {
   document.getElementById('game-grid').style.display = 'none';
-  document.getElementById('game-area').style.display = 'block';
-  document.getElementById('game-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  const titles = { trivia:'🧠 GenLayer Trivia', sentiment:'🔮 Sentiment Oracle', builder:'🧩 Contract Builder', sim:'⚡ Consensus Simulator' };
+  const ga = document.getElementById('game-area');
+  ga.style.display = 'block';
+  ga.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const titles = {
+    trivia: '🧠 GenLayer Trivia',
+    sentiment: '🔮 Sentiment Oracle',
+    builder: '🧩 Contract Builder',
+    sim: '⚡ Consensus Simulator'
+  };
   document.getElementById('toolbar-title').textContent = titles[id];
   document.getElementById('toolbar-score').textContent = '';
   document.getElementById('progress-fill').style.width = '0%';
@@ -275,12 +405,12 @@ window.openGame = (id) => {
 const Qs = [
   { cat:'BASICS', q:'What must be the very first line of every GenLayer contract?', opts:['from genlayer import *','# { "Depends": "py-genlayer:test" }','class Contract(gl.Contract):','import genlayer'], ans:1, exp:'The runner comment tells GenVM which runtime to use. Without it you get the "absent_runner_comment" error.' },
   { cat:'CONSENSUS', q:'What is GenLayer\'s consensus mechanism called?', opts:['Proof of Work','Proof of Stake','Optimistic Democracy','Byzantine Agreement'], ans:2, exp:'Optimistic Democracy — multiple validators with different AI models independently vote on outcomes.' },
-  { cat:'VALIDATORS', q:'How many validators are randomly selected per transaction on Bradbury?', opts:['1','3','5','All nodes'], ans:2, exp:'5 validators are randomly selected per transaction. You cannot predict which nodes will be chosen in advance.' },
+  { cat:'VALIDATORS', q:'How many validators are randomly selected per transaction on Bradbury?', opts:['1','3','5','All nodes'], ans:2, exp:'5 validators are randomly selected per transaction. You cannot predict which nodes or LLMs will be chosen in advance.' },
   { cat:'API', q:'Which storage type is FORBIDDEN for state variables in GenLayer contracts?', opts:['str','bool','int','bytes'], ans:2, exp:'int is forbidden. Use fixed-size types like i32, u32, u64, bigint or u256 instead.' },
   { cat:'TRANSACTIONS', q:'What is the terminal success state of a GenLayer transaction?', opts:['ACCEPTED','PROPOSING','FINALIZED','COMMITTED'], ans:2, exp:'FINALIZED is the end state. Journey: PENDING → PROPOSING → COMMITTING → REVEALING → ACCEPTED → FINALIZED.' },
-  { cat:'API', q:'Which method forces all validators to return byte-identical results?', opts:['gl.eq_principle.comparative()','gl.eq_principle.strict_eq()','gl.eq_principle.majority()','gl.eq_principle.fuzzy()'], ans:1, exp:'strict_eq requires identical output from all validators. Best for structured data like JSON.' },
+  { cat:'API', q:'Which method forces all validators to return byte-identical results?', opts:['gl.eq_principle.comparative()','gl.eq_principle_strict_eq()','gl.eq_principle.majority()','gl.eq_principle.fuzzy()'], ans:1, exp:'gl.eq_principle_strict_eq() requires identical output from all validators. Best for structured data like JSON.' },
   { cat:'BRADBURY', q:'What makes Testnet Bradbury different from previous testnets?', opts:['Faster block times','Validators use real LLMs of their own choice','Cheaper gas fees','Bigger block size'], ans:1, exp:'On Bradbury each validator runs their own real LLM — Mistral, Llama, Qwen etc. Prompt quality matters!' },
-  { cat:'CONTRACTS', q:'Which decorator marks a method that reads state without charging gas?', opts:['@gl.public.write','@gl.public.read','@gl.public.view','@gl.public.get'], ans:2, exp:'@gl.public.view marks read-only methods. They\'re free because they don\'t change state or need consensus.' },
+  { cat:'CONTRACTS', q:'Which decorator marks a method that reads state without charging gas?', opts:['@gl.public.write','@gl.public.read','@gl.public.view','@gl.public.get'], ans:2, exp:'@gl.public.view marks read-only methods. Free because they don\'t change state or need consensus.' },
 ];
 
 let tIdx = 0, tScore = 0, tAnswered = false;
@@ -301,18 +431,19 @@ function showQ() {
     <div class="opts-grid">${q.opts.map((o,i)=>`<button class="opt" onclick="answerTrivia(${i})">${o}</button>`).join('')}</div>
     <div class="chain-status hidden" id="t-status"></div>
     <div class="ai-verdict" id="t-verdict"></div>
+    <div class="validator-reveal" id="t-validators"></div>
     <button class="action-btn btn-cyan" id="t-next" onclick="nextQ()" style="display:none">Next question →</button>`;
 }
 
 window.answerTrivia = async (i) => {
   if (tAnswered) return; tAnswered = true;
   const q = Qs[tIdx];
-  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  if (i===q.ans) { tScore++; document.querySelectorAll('.opt')[q.ans].classList.add('correct'); }
+  document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+  if (i === q.ans) { tScore++; document.querySelectorAll('.opt')[q.ans].classList.add('correct'); }
   else { document.querySelectorAll('.opt')[i].classList.add('wrong'); document.querySelectorAll('.opt')[q.ans].classList.add('correct'); }
   document.getElementById('toolbar-score').textContent = `${tScore}/${Qs.length}`;
 
-  setStatus('t-status','pending','Bradbury validators are judging your answer on-chain...');
+  setStatus('t-status', 'pending', 'Sending to Bradbury — waiting for 5 randomly selected validators...');
   try {
     const hash = await write(CONTRACTS.trivia, 'submit_answer', [q.q, q.opts[i]]);
     const verdict = await read(CONTRACTS.trivia, 'get_last_verdict');
@@ -320,11 +451,16 @@ window.answerTrivia = async (i) => {
     const v = document.getElementById('t-verdict');
     v.className = 'ai-verdict show';
     v.innerHTML = p
-      ? `🤖 <strong>AI Verdict:</strong> ${p.correct ? '✅ Correct' : '❌ Incorrect'} — ${p.reason}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`
-      : `🤖 Answer judged on-chain.<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
-    setStatus('t-status','success','Consensus reached on Testnet Bradbury ✓');
+      ? `🤖 <strong>AI Verdict:</strong> ${p.correct ? '✅ Correct' : '❌ Incorrect'} — ${p.reason}`
+      : `🤖 Answer judged on-chain.`;
+    setStatus('t-status', 'success', 'Consensus reached on Testnet Bradbury ✓ — fetching validator set...');
+
+    // Fetch and reveal real validator set
+    const valData = await fetchValidators(hash);
+    renderValidatorReveal('t-validators', hash, valData);
+    setStatus('t-status', 'success', 'Consensus reached ✓ — validator set revealed below');
   } catch(e) {
-    setStatus('t-status','error','Chain unavailable — answer checked locally');
+    setStatus('t-status', 'error', 'Chain unavailable — ' + e.message);
     const v = document.getElementById('t-verdict');
     v.className = 'ai-verdict show';
     v.innerHTML = `📖 ${q.exp}`;
@@ -343,7 +479,7 @@ function showTriviaEnd() {
     <div class="result-screen">
       <div class="result-icon">${e}</div>
       <div class="result-num">${tScore}/${Qs.length}</div>
-      <div class="result-sub">${pct}% correct — AI judged on Testnet Bradbury</div>
+      <div class="result-sub">${pct}% correct — AI judged by real Bradbury validators</div>
       <div class="result-msg">${m}</div>
       <button class="action-btn btn-cyan" onclick="openGame('trivia')" style="margin:1.5rem auto 0;display:block">Play again</button>
     </div>`;
@@ -354,16 +490,17 @@ function showTriviaEnd() {
 function renderSentiment() {
   document.getElementById('game-body').innerHTML = `
     <div class="q-eyebrow">AI SENTIMENT ORACLE — POWERED BY BRADBURY</div>
-    <div class="q-text" style="font-size:14px;">Type any text. Real Bradbury validators reach consensus on its sentiment — result written to the blockchain.</div>
-    <textarea class="sentiment-input" id="sent-input" placeholder="Type anything... e.g. 'I love building on GenLayer!'"></textarea>
+    <div class="q-text" style="font-size:14px;">Type any text. 5 <strong>randomly selected</strong> Bradbury validators reach consensus on its sentiment. You'll see who was picked after finality.</div>
+    <textarea class="sentiment-input" id="sent-input" placeholder="Type anything..."></textarea>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="action-btn btn-cyan" onclick="runSentiment()" id="sent-btn">Analyse on-chain →</button>
-      <button class="action-btn btn-muted" onclick="fill('I absolutely love building on GenLayer — it\'s revolutionary!')">Try positive</button>
+      <button class="action-btn btn-muted" onclick="fill('I absolutely love building on GenLayer!')">Try positive</button>
       <button class="action-btn btn-muted" onclick="fill('This keeps failing and I cannot figure out why.')">Try negative</button>
       <button class="action-btn btn-muted" onclick="fill('This is fine.')">Try ambiguous</button>
     </div>
     <div class="chain-status hidden" id="sent-status"></div>
-    <div class="sentiment-result" id="sent-result"></div>`;
+    <div class="sentiment-result" id="sent-result"></div>
+    <div class="validator-reveal" id="sent-validators"></div>`;
 }
 
 window.fill = (t) => { document.getElementById('sent-input').value = t; };
@@ -373,7 +510,7 @@ window.runSentiment = async () => {
   if (!text) return;
   const btn = document.getElementById('sent-btn');
   btn.disabled = true;
-  setStatus('sent-status','pending','Sending to Bradbury validators for consensus...');
+  setStatus('sent-status', 'pending', 'Sending to Bradbury — 5 random validators being selected...');
   try {
     const hash = await write(CONTRACTS.sentiment, 'analyze', [text]);
     const result = await read(CONTRACTS.sentiment, 'get_last_result');
@@ -384,17 +521,21 @@ window.runSentiment = async () => {
     const emoji = s==='positive'?'😊':s==='negative'?'😞':'😐';
     const el = document.getElementById('sent-result');
     el.className = `sentiment-result ${cls}`;
-    el.innerHTML = `${emoji} <strong>${s.toUpperCase()}</strong><br><span style="font-size:13px;opacity:.85;">${r}</span><br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
-    setStatus('sent-status','success','Consensus reached ✓ — result stored on Testnet Bradbury');
+    el.innerHTML = `${emoji} <strong>${s.toUpperCase()}</strong><br><span style="font-size:13px;opacity:.85;">${r}</span>`;
+
+    setStatus('sent-status', 'success', 'Consensus reached ✓ — fetching which validators were selected...');
+    const valData = await fetchValidators(hash);
+    renderValidatorReveal('sent-validators', hash, valData);
+    setStatus('sent-status', 'success', 'Done ✓ — validator set revealed below');
   } catch(e) {
-    setStatus('sent-status','error','Chain call failed: ' + e.message);
+    setStatus('sent-status', 'error', 'Chain call failed: ' + e.message);
   }
   btn.disabled = false;
 };
 
 // ── GAME 3: CONTRACT BUILDER ──────────────────────────────────────────────────
 const BD = {
-  dep:  { label:'# { "Depends": "py-genlayer:test" }', cls:'b-dep', desc:'Runner comment (line 1, required)' },
+  dep:  { label:'# { "Depends": "py-genlayer:test" }', cls:'b-dep', desc:'Runner comment (line 1)' },
   imp:  { label:'from genlayer import *',               cls:'b-imp', desc:'SDK import' },
   cls:  { label:'class Contract(gl.Contract):',         cls:'b-cls', desc:'Contract class' },
   var:  { label:'    state: str',                       cls:'b-var', desc:'State variable' },
@@ -411,18 +552,19 @@ function renderBuilder() {
   ).join('');
   document.getElementById('game-body').innerHTML = `
     <div class="q-eyebrow">CONTRACT BUILDER — AI VALIDATED ON BRADBURY</div>
-    <div class="q-text" style="font-size:14px;">Drag code blocks to build a valid Intelligent Contract. An AI validator on Bradbury will check your work.</div>
+    <div class="q-text" style="font-size:14px;">Drag code blocks to build a valid contract. Real validators will check your work — you'll see who was selected after consensus.</div>
     <div class="build-stage" id="stage" ondragover="do_(event)" ondrop="dd(event)" ondragleave="dl()">
-      <div class="stage-placeholder" id="sph">Drop blocks here in correct order ↓</div>
+      <div class="stage-placeholder" id="sph">Drop blocks here in order ↓</div>
     </div>
-    <div style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">AVAILABLE BLOCKS — hover for description</div>
+    <div style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">AVAILABLE BLOCKS</div>
     <div class="palette">${palette}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <button class="action-btn btn-green" onclick="checkB()">Submit to Bradbury →</button>
       <button class="action-btn btn-muted" onclick="renderBuilder()">Clear</button>
     </div>
     <div class="chain-status hidden" id="b-status"></div>
-    <div class="builder-result" id="b-result"></div>`;
+    <div class="builder-result" id="b-result"></div>
+    <div class="validator-reveal" id="b-validators"></div>`;
 }
 
 window.ds = (e) => e.dataTransfer.setData('k', e.target.dataset.key);
@@ -451,7 +593,7 @@ window.rb = (k, btn) => {
 window.checkB = async () => {
   if (!bdrop.length) return;
   const code = bdrop.map(k=>BD[k].label).join('\n');
-  setStatus('b-status','pending','Sending to Bradbury AI validator...');
+  setStatus('b-status', 'pending', 'Sending to Bradbury — waiting for randomly selected validators...');
   try {
     const hash = await write(CONTRACTS.checker, 'check_contract', [code]);
     const fb = await read(CONTRACTS.checker, 'get_last_feedback');
@@ -459,14 +601,17 @@ window.checkB = async () => {
     const res = document.getElementById('b-result');
     if (p?.valid) {
       res.className = 'builder-result b-ok';
-      res.innerHTML = `✅ Score ${p.score}/7 — ${p.feedback}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+      res.innerHTML = `✅ Score ${p.score}/7 — ${p.feedback}`;
     } else {
       res.className = 'builder-result b-err';
-      res.innerHTML = `❌ Score ${p?.score??'?'}/7 — ${p?.feedback??'Not valid yet. Keep building!'}<br><a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
+      res.innerHTML = `❌ Score ${p?.score??'?'}/7 — ${p?.feedback??'Not valid yet. Keep building!'}`;
     }
-    setStatus('b-status','success','AI validation complete on Testnet Bradbury ✓');
+    setStatus('b-status', 'success', 'AI validation complete ✓ — fetching validator set...');
+    const valData = await fetchValidators(hash);
+    renderValidatorReveal('b-validators', hash, valData);
+    setStatus('b-status', 'success', 'Done ✓ — validator set revealed below');
   } catch(e) {
-    setStatus('b-status','error','Chain call failed: ' + e.message);
+    setStatus('b-status', 'error', 'Chain call failed: ' + e.message);
   }
 };
 
@@ -489,6 +634,11 @@ function showRound() {
   const r = ROUNDS[sIdx];
   document.getElementById('game-body').innerHTML = `
     <div class="q-eyebrow">YOU ARE A VALIDATOR — ROUND ${sIdx+1}/${ROUNDS.length}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">
+      ⚠️ On Testnet Bradbury, <strong>5 validators are randomly selected</strong> per transaction.
+      You don't know which nodes will be picked or which LLMs they run.
+      Submit your answer — then find out who else was selected.
+    </div>
     <div class="sim-prompt-box">
       <div class="sim-eyebrow">CONTRACT PROMPT</div>
       <div class="sim-prompt-text">${r.prompt}</div>
@@ -497,12 +647,13 @@ function showRound() {
     <div class="sim-choices">${r.choices.map(c=>`<button class="sim-choice" onclick="pickS('${c}',this)">${c}</button>`).join('')}</div>
     <button class="action-btn btn-cyan" id="s-run" onclick="runS()" disabled>Submit to Bradbury →</button>
     <div class="chain-status hidden" id="s-status"></div>
-    <div class="consensus-result" id="s-result"></div>`;
+    <div class="consensus-result" id="s-result"></div>
+    <div class="validator-reveal" id="s-validators"></div>`;
 }
 
 window.pickS = (c, btn) => {
   sChoice = c;
-  document.querySelectorAll('.sim-choice').forEach(b=>b.classList.remove('picked'));
+  document.querySelectorAll('.sim-choice').forEach(b => b.classList.remove('picked'));
   btn.classList.add('picked');
   document.getElementById('s-run').disabled = false;
 };
@@ -510,8 +661,8 @@ window.pickS = (c, btn) => {
 window.runS = async () => {
   const r = ROUNDS[sIdx];
   document.getElementById('s-run').disabled = true;
-  document.querySelectorAll('.sim-choice').forEach(b=>b.disabled=true);
-  setStatus('s-status','pending','Submitting to Bradbury — waiting for validator consensus...');
+  document.querySelectorAll('.sim-choice').forEach(b => b.disabled = true);
+  setStatus('s-status', 'pending', 'Submitting to Bradbury — 5 random validators being selected now...');
   try {
     const hash = await write(CONTRACTS.consensus, 'run_round', [r.prompt, sChoice]);
     const result = await read(CONTRACTS.consensus, 'get_last_round');
@@ -519,12 +670,19 @@ window.runS = async () => {
     const aiAns = p?.ai_answer || '(unknown)';
     const agreed = p?.agreed === 'true';
     if (agreed) sScore++;
+
     const res = document.getElementById('s-result');
     res.className = `consensus-result ${agreed?'c-accepted':'c-disagree'}`;
     res.innerHTML = `${agreed?'✅ You AGREED with the Bradbury consensus':'❌ You DISAGREED with the Bradbury consensus'}<br>
-      <span style="font-size:11px;opacity:.85;margin-top:4px;display:block;">AI validators answered: <strong>${aiAns}</strong> · Your answer: <strong>${sChoice}</strong></span><br>
-      <a class="tx-link" href="${explorerUrl(hash)}" target="_blank">View on Explorer ↗</a>`;
-    setStatus('s-status','success','Consensus result stored on Testnet Bradbury ✓');
+      <span style="font-size:11px;opacity:.85;margin-top:4px;display:block;">AI validators answered: <strong>${aiAns}</strong> · Your answer: <strong>${sChoice}</strong></span>`;
+
+    setStatus('s-status', 'success', 'Consensus complete ✓ — revealing which validators were randomly selected...');
+
+    // Fetch and reveal the real validator set
+    const valData = await fetchValidators(hash);
+    renderValidatorReveal('s-validators', hash, valData);
+    setStatus('s-status', 'success', 'Done ✓ — now you know who was selected');
+
     const nb = document.createElement('button');
     nb.className = 'action-btn btn-cyan';
     nb.style.marginTop = '14px';
@@ -532,7 +690,7 @@ window.runS = async () => {
     nb.onclick = () => { sIdx++; showRound(); };
     document.getElementById('game-body').appendChild(nb);
   } catch(e) {
-    setStatus('s-status','error','Chain call failed: ' + e.message);
+    setStatus('s-status', 'error', 'Chain call failed: ' + e.message);
     document.getElementById('s-run').disabled = false;
   }
 };
@@ -544,7 +702,9 @@ function showSimEnd() {
       <div class="result-icon">${sScore===ROUNDS.length?'⚡':'🤔'}</div>
       <div class="result-num">${sScore}/${ROUNDS.length}</div>
       <div class="result-sub">rounds you agreed with the Bradbury AI consensus</div>
-      <div class="result-msg">${sScore===ROUNDS.length?'Perfect validator! Your answers matched the on-chain consensus every round.':'The real validators had their say. Try again and see if you agree more!'}</div>
+      <div class="result-msg">${sScore===ROUNDS.length
+        ? 'Perfect validator! Your answers matched the on-chain consensus every round.'
+        : 'The real validators had their say. Remember — you never know who they are until after consensus!'}</div>
       <button class="action-btn btn-cyan" onclick="openGame('sim')" style="margin:1.5rem auto 0;display:block">Play again</button>
     </div>`;
   document.getElementById('toolbar-score').textContent = '';
